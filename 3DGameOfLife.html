@@ -1,32 +1,59 @@
 <!DOCTYPE html>
 <html>
-	<title id="myTitle">3D Conway's Game of Life</title>
+	<head>
+		<meta charset="utf-8" />
+		<title id="myTitle">3D Conway's Game of Life</title>
+		<style type="text/css">
+			<!-- -->
+		</style>
+    </style>
+	</head>
 	<header id="myHeader">
 		<h1 id="myh1">3D Conway's Game of Life</h1>
 		<h5 id="myh5">By: Raphael Beaulieu and Elliot Coy</h5>
 	</header>
-	<body>
-		<canvas id="myCanvas">Your browser does not support the HTML5 canvas tag.</canvas>
+	<body onload="main()">
+		<canvas id="myWebGLCanvas" width="600" height="400">Your browser does not support the canvas tag.</canvas>
 
-		<table>
+		<script src="matsuda-lea/lib/webgl-utils.js"></script>
+		<script src="matsuda-lea/lib/webgl-debug.js"></script>
+		<script src="matsuda-lea/lib/cuon-utils.js"></script>
+		<script src="game.js"></script>
+		
+		<table id="myPlayTable" style="width:600px;">
 			<tr>
-				
-			</tr>
-			<tr>
-				<td>Type of Life:</td>
-				<td>
-					B
-					<select>
-						<option value="3">3</option>
-						<option value="36">36</option>
-					</select>
-					/S
-					<select>
-						<option value="23">23</option>
-					</select>
+				<td id="myButtons">
+					<button type="btnStart">Start</button>
+					<button type="btnStop">Stop</button>
+					<button type="btnStop">Clear</button>
 				</td>
-				<td>Speed:</td>
-				<td><input type="range" id="myRange" value="90"><td>
+				<td id="mySpeed" style>Speed: <input type="range" id="rngeSpeed" min="1" max="100" value="1" style="vertical-align:middle;"><td>
+				<td id="myStepTitle" style="text-align:right;">Current Step:</td>
+				<td id="myStep" style="text-align:right;width:60px;">0</td>
+			</tr>
+		</table>
+		<table id="myGameTable" style="width:600px;">
+			<tr>
+				<td id="myTextboxes">
+					Type of Life: B
+					<input type="text" name="txtBVal" value="3" style="width:50px;">
+					/S
+					<input type="text" name="txtSVal" value="2,3" style="width:50px;">
+				</td>
+				<td id="myPopTitle" style="text-align:right;vertical-align:text-top;">Population:</td>
+				<td id="myPop" style="text-align:right;width:60px;vertical-align:text-top;">0</td>
+			</tr>
+		</table>
+		<table id="myCoordTable" style="width:600px;">
+			<tr>
+				<td id="myCamTitle" style="width:105px;">Camera Coords:</td><td>(</td>
+				<td id="myCamX" style="text-align:right;">0</td><td>,</td>
+				<td id="myCamY" style="text-align:right;">0</td><td>,</td>
+				<td id="myCamZ" style="text-align:right;">0</td><td style="padding-right:20px">)</td>
+				<td id="myLookTitle" style="width:115px;">Look At Coords:</td><td>(</td>
+				<td id="myLookX" style="text-align:right;">0</td><td>,</td>
+				<td id="myLookY" style="text-align:right;">0</td><td>,</td>
+				<td id="myLookZ" style="text-align:right;">0</td><td style="text-align:right;width:1px;">)</td>
 			</tr>
 		</table>
 		
