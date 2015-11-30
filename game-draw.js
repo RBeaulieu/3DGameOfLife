@@ -2,12 +2,15 @@
 var VSHADER_SOURCE = null;
 // Fragment shader program
 var FSHADER_SOURCE = null;
+// Movement speed
+var moveSpeed = 0.1;
 // Eye coordinates
 var eyeX = 3.0, eyeY = 3.0, eyeZ = 7.00;
 // Reference coordinates
 var centerX = 0.0, centerY = 0.0, centerZ = 0.0;
 // Up coordinates
 var upX = 0.0, upY = 1.0, upZ = 0.0;
+
 
 function drawInit() {
 	// Retrieve <canvas> element
@@ -162,14 +165,20 @@ function initArrayBuffer(gl, data, num, type, attribute) {
 }
 
 function keyDown(ev, gl, n, u_ViewMatrix, viewMatrix) {
-	if(ev.keyCode == 37) { eyeX -= 0.1; } // The right arrow key was pressed
-	else if(ev.keyCode == 38) { eyeY += 0.1; } // The up arrow key was pressed
-	else if(ev.keyCode == 39) { eyeX += 0.1; } // The left arrow key was pressed
-	else if(ev.keyCode == 40) { eyeY -= 0.1; } // The down arrow key was pressed
-	else if(ev.keyCode == 65) { eyeX -= 0.1; centerX -= 0.1; } // The A key was pressed
-	else if(ev.keyCode == 68) { eyeX += 0.1; centerX += 0.1; } // The D key was pressed
-	else if(ev.keyCode == 83) { eyeZ -= 0.1; } // The S key was pressed
-	else if(ev.keyCode == 87) { eyeZ += 0.1; } // The W key was pressed
+	if(ev.keyCode == 37) { centerX -= moveSpeed; } // The right arrow key was pressed
+	else if(ev.keyCode == 38) { centerY += moveSpeed; } // The up arrow key was pressed
+	else if(ev.keyCode == 39) { centerX += moveSpeed; } // The left arrow key was pressed
+	else if(ev.keyCode == 40) { centerY -= moveSpeed; } // The down arrow key was pressed
+	else if(ev.keyCode == 65) { eyeX -= moveSpeed; centerX -= moveSpeed; } // The A key was pressed
+	else if(ev.keyCode == 68) { eyeX += moveSpeed; centerX += moveSpeed; } // The D key was pressed
+	else if(ev.keyCode == 83) { // The S key was pressed
+		eyeZ -= moveSpeed;
+		centerZ -= moveSpeed;
+	}
+	else if(ev.keyCode == 87) { // The W key was pressed
+		eyeZ += moveSpeed;
+		centerZ += moveSpeed;
+	}
     else { return; }
     
 	draw(gl, n, u_ViewMatrix, viewMatrix); // <===== MUST BE MOVED
