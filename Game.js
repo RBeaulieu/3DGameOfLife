@@ -1,80 +1,67 @@
-var prevLife = [];
-var currentLife = [];
-var changeList = [];
-var bList = [];
-var sList = [];
-var size = 10
+"use strict";
+
+var prevStep = [];
+var currStep = [];
+var prevChangeSet = {};
+var currChangeSet = {}
+var bSet = {};
+var sSet = {};
+var size = 5;
 
 function main()
 {
 	drawInit();
 	gameInit();
 	
-	//TEST STUFF FOR TESTING
+	test();
 	
-	/*
-	var blah = new Vector3([1, 2, 3]);
+	//TEST
+	currChangeSet["222"] = true;
+	currStep[2][2][2] = 1;
 	
-	console.log(blah);
-	console.log(blah.elements);
-	console.log(blah.elements[0]);
-	*/
+	bSet["2"] = true;
+	sSet["3"] = true;
 	
-	/*
-	var x = 5;
-	var y = 5;
-	var z = 5;
+	generateNextStep();
 	
-	for(var k = -1; k < 2; k++)
-	{
-		for(var j = -1; j < 2; j++)
-		{
-			for(var i = -1; i < 2; i++)
-			{
-				console.log((z + k) + ", " + (y + j) + ", " + (x + i));
-			}
-		}
-	}
-	*/
-	
-	var e = new Vector3([1, 2, 3]);
-	var f = new Vector3([1, 2, 3]);
-	var g = e;
-	console.log(e.elements[0] == f.elements[0]);
-	console.log(e.elements === f.elements);
-	console.log(e == g);
-	console.log(e === g);
+	console.log(currStep);
 }
 
 function gameInit()
 {
 	for(var z = 0; z < size; z++)
 	{
-		prevLife[z] = [];
-		currentLife[z] = [];
+		prevStep[z] = [];
+		currStep[z] = [];
 		
 		for(var y = 0; y < size; y++)
 		{
-			prevLife[z][y] = [];
-			currentLife[z][y] = [];
+			prevStep[z][y] = [];
+			currStep[z][y] = [];
 			
 			for(var x = 0; x < size; x ++)
 			{
-				prevLife[z][y][x] = 0;
-				currentLife[z][y][x] = 0;
+				prevStep[z][y][x] = 0;
+				currStep[z][y][x] = 0;
 			}
 		}
 	}
 }
-/*
-function game()
+
+function generateNextStep()
 {
-	for(let loc of changeList) {
+	prevStep = currStep;
+	currStep = prevStep.map(function(outerArr) { return outerArr.map(function(innerArr) { return innerArr.slice(); }) });  // Makes deep copy of 3D array
+	prevChangeSet = currChangeSet;
+	currChangeSet = {};
+	
+	for(let loc in prevChangeSet) {
 		var count = 0;
-		var local
-		var x = loc.elements[0];
-		var y = loc.elements[1];
-		var z = loc.elements[2];
+		var localNodes = [];
+		var localNodesCount = 0;
+		var x = parseInt(loc.charAt(0));
+		var y = parseInt(loc.charAt(1));
+		var z = parseInt(loc.charAt(2));
 		
 		for(var k = -1; k < 2; k++)
 		{
@@ -88,7 +75,9 @@ function game()
 						{
 							if((x + i) > -1 && (x + i) < size) // Check to make sure we're not checking out of bounds
 							{
-								if(!(k == 0 && j == 0 && i == 0) && prevLife[z + k][y + j][x + i] != 0) { count++; }
+								if(!(k == 0 && j == 0 && i == 0) && prevStep[z + k][y + j][x + i] != 0) { count++; }
+								//put location in localNodes
+								localNodes[localNodesCount] = (x + i).toString() + (y + j).toString() + (z + k).toString();
 							}
 						}
 					}
@@ -96,20 +85,19 @@ function game()
 			}
 		}
 		
-		if(prevLife[z][y][x] != 0)
+		if(prevStep[z][y][x] != 0)
 		{
-			if(binaryIndexOf.call(sList, count) > 0)
+			if(sSet[count.toString()] === undefined)
 			{
-				changeList = changeList.concat();
+				currStep[z][y][x] = 0;
+				for(let chng of localNodes)	{ currChangeSet[chng] = true; }
 			}
-		}
-		else
-		{
-			if(binaryIndexOf.call(bList, count) > 0)
+			
+			if(bSet[count.toString()] !== undefined)
 			{
-				changeList = changeList.concat();
+				prevStep[z][y][x] = 1;
+				for(let chng of localNodes)	{ currChangeSet[chng] = true; }
 			}
 		}
 	}
 }
-*/

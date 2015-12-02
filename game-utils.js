@@ -1,33 +1,94 @@
-/**
- * Performs a binary search on the host array. This method can either be
- * injected into Array.prototype or called with a specified scope like this:
- * binaryIndexOf.call(someArray, searchElement);
- *
- * @param {*} searchElement The item to search for within the array.
- * @return {Number} The index of the element which defaults to -1 when not found.
- */
-function binaryIndexOf(searchElement) {
-	'use strict';
+function test()
+{
+		//TEST STUFF FOR TESTING
 	
-	var minIndex = 0;
-	var maxIndex = this.length - 1;
-	var currentIndex;
-	var currentElement;
+	/*
+	var x = 5;
+	var y = 5;
+	var z = 5;
 	
-	while (minIndex <= maxIndex) {
-		currentIndex = (minIndex + maxIndex) / 2 | 0;
-		currentElement = this[currentIndex];
-	
-		if (currentElement < searchElement) {
-			minIndex = currentIndex + 1;
+	for(var k = -1; k < 2; k++)
+	{
+		for(var j = -1; j < 2; j++)
+		{
+			for(var i = -1; i < 2; i++)
+			{
+				console.log((z + k) + ", " + (y + j) + ", " + (x + i));
+			}
 		}
-		else if (currentElement > searchElement) {
-			maxIndex = currentIndex - 1;
-		}
-		else {
-			return currentIndex;
+	}
+	*/
+	
+	/*
+	var obj = {"123":true, "2":true, "3":true, "9":true};
+	var A = "1";
+	var B = "5";
+	
+	if (A in obj) {
+    	console.log("true");
+	} else { console.log("false"); }
+	if (B in obj) {
+    	console.log("true");
+	} else { console.log("false"); }
+	
+	console.log(obj[B]);
+	console.log(undefined == true);
+	
+	for(let C in obj)
+	{
+		console.log(parseInt(C.charAt(0)));
+	}
+	*/
+	/*
+	var a = [];
+	a[0] = ['apple', 'orange', 'grape'];
+	a[1] = ['water', 'soda', 'tea'];
+	a[2] = ['phone', 'tablet', 'laptop'];
+	
+	var b = a.map(function(arr) { return arr.slice(); });
+	var c = a.map(function(arr) { return arr.slice(); });
+	
+	var test = [a, b, c];
+	
+	var test2 = test.map(function(arr) { return arr.slice(); });
+	test[0][0][0] = 'shit';
+	console.log(test);
+	console.log(test2);
+	*/
+	
+	/*
+	var test = [];
+	for(var z = 0; z < 3; z++)
+	{
+		test[z] = [];
+		
+		for(var y = 0; y < 3; y++)
+		{
+			test[z][y] = [];
+			
+			for(var x = 0; x < 3; x ++)
+			{
+				test[z][y][x] = x;
+			}
 		}
 	}
 	
-	return -1;
+	console.log(test);
+	
+	var test2 = test.map(
+		function(arr)
+		{
+			return arr.map(
+				function(arr2)
+				{
+					return arr2.slice();
+				}
+			)
+		}
+	);
+	//var test2 = test.map(function(arr) { arr.map(function(arr) { return arr.slice(); }); });
+	test2[0][0][0] = 'shit';
+	console.log(test);
+	console.log(test2);
+	*/
 }
