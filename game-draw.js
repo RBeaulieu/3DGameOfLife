@@ -2,18 +2,46 @@
 var VSHADER_SOURCE = null;
 // Fragment shader program
 var FSHADER_SOURCE = null;
+// Draw locations
+var g_currStep = [];
+// Cube buffer that stores the vertices for the cube
+var g_cubeBuffer = null;
+// Coordinate transformation matrix
+var g_modelMatrix = new Matrix4(), g_mvpMatrix = new Matrix4();
 // Movement speed
-var moveSpeed = 0.1;
+var g_moveSpeed = 0.1;
 // Eye coordinates
-var eyeX = 3.0, eyeY = 3.0, eyeZ = 7.00;
+var g_eyeX = 4.0, g_eyeY = 12.0, g_eyeZ = 25.00;
 // Reference coordinates
-var centerX = 0.0, centerY = 0.0, centerZ = 0.0;
-// Up coordinates
-var upX = 0.0, upY = 1.0, upZ = 0.0;
+var g_centerX = 6.0, g_centerY = 3.0, g_centerZ = 3.0;
 
+var size = 5;
 
 function drawInit()
 {
+	for(var z = 0; z < size; z++)
+	{
+		g_currStep[z] = [];
+		
+		for(var y = 0; y < size; y++)
+		{
+			g_currStep[z][y] = [];
+			
+			for(var x = 0; x < size; x ++)
+			{
+				if(z == 2 || y == 2 || x == 2)
+				{
+					g_currStep[z][y][x] = 1;
+				}
+				else
+				{
+					g_currStep[z][y][x] = 0;
+				}
+			}
+		}
+	}
+	console.log(g_currStep);
+	
 	// Retrieve <canvas> element
 	var canvas = document.getElementById('myWebGLCanvas');
 	
@@ -33,7 +61,6 @@ function drawInit()
 		console.log('*** Error: Failed to intialize shaders.');
 		return;
 	}
-	
 	// Set vertex information
 	var n = initVertexBuffers(gl);
 	if (n < 0) {
@@ -41,19 +68,25 @@ function drawInit()
 		return;
 	}
 	
-	// Specify the color for clearing <canvas>
+	// Specify the color for clearing <canvas> and enable depth testing
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
-	// Enable depth testing
 	gl.enable(gl.DEPTH_TEST);
 	
-	/*// Get the storage location of u_MvpMatrix
-	var u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MVPMatrix');
-	if (!u_MvpMatrix) {
-		console.log('Failed to get the storage location of u_MVPMatrix');
+	// Get the storage locations of attribute and uniform variables
+	var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+	var u_MVPMatrix = gl.getUniformLocation(gl.program, 'u_MVPMatrix');
+	if (a_Position < 0 || !u_MVPMatrix) {
+		console.log('*** Error: Failed to get the storage location of attribute or uniform variable');
 		return;
-	}*/
+	}
 	
-	cont(gl, n);
+	// Calculate the view projection matrix
+	var VPMatrix = new Matrix4();
+	
+	// Register the event handler to be called on key press
+	document.onkeydown = function(ev){ keyDown(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix); };
+	
+	draw(gl, n, VPMatrix, a_Position, u_MVPMatrix); // Draw
 }
 
 function getShader(gl, scriptId)
@@ -70,24 +103,6 @@ function getShader(gl, scriptId)
 	else { console.log('*** Error: shader type not set'); }
 }
 
-function cont(gl, n)
-{
-	// Get the storage location of u_MVPMatrix
-	var u_MVPMatrix = gl.getUniformLocation(gl.program, 'u_MVPMatrix');
-	if (!u_MVPMatrix) {
-		console.log('Failed to get the storage location of u_MVPMatrix');
-		return;
-	}
-	
-	// Create the MVP Matrix
-	var MVPMatrix = new Matrix4();
-	
-	// Register the event handler to be called on key press
-	document.onkeydown = function(ev){ keyDown(ev, gl, n, u_MVPMatrix, MVPMatrix); };
-	
-	draw(gl, n, u_MVPMatrix, MVPMatrix);   // Draw
-}
-	
 function initVertexBuffers(gl)
 {
 	// Create a cube
@@ -126,17 +141,17 @@ function initVertexBuffers(gl)
 		20,21,22,  20,22,23     // back
 	]);
 	
-	// Create a buffer object
+	// Write coords to buffers, but don't assign to attribute variables
+	g_cubeBuffer = initArrayBufferForLaterUse(gl, vertices, 3, gl.FLOAT);
+	
+	if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) { return -1; }
+	
+	// Write the indices to the buffer object
 	var indexBuffer = gl.createBuffer();
-	if (!indexBuffer) 
+	if (!indexBuffer) {
+		console.log('Failed to create the buffer object');
 		return -1;
-	
-	// Write the vertex coordinates and color to the buffer object
-	if (!initArrayBuffer(gl, vertices, 3, gl.FLOAT, 'a_Position'))
-		return -1;
-	
-	if (!initArrayBuffer(gl, colors, 3, gl.FLOAT, 'a_Color'))
-		return -1;
+	}
 	
 	// Write the indices to the buffer object
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -145,16 +160,35 @@ function initVertexBuffers(gl)
 	return indices.length;
 }
 
-function initArrayBuffer(gl, data, num, type, attribute)
+function initArrayBufferForLaterUse(gl, data, num, type){
+  var buffer = gl.createBuffer();   // Create a buffer object
+  if (!buffer) {
+    console.log('Failed to create the buffer object');
+    return null;
+  }
+  // Write date into the buffer object
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+
+  // Store the necessary information to assign the object to the attribute variable later
+  buffer.num = num;
+  buffer.type = type;
+
+  return buffer;
+}
+
+function initArrayBuffer(gl, attribute, data, num, type)
 {
 	var buffer = gl.createBuffer();   // Create a buffer object
 	if (!buffer) {
 		console.log('Failed to create the buffer object');
 		return false;
 	}
+	
 	// Write date into the buffer object
 	gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 	gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+	
 	// Assign the buffer object to the attribute variable
 	var a_attribute = gl.getAttribLocation(gl.program, attribute);
 	if (a_attribute < 0) {
@@ -162,48 +196,110 @@ function initArrayBuffer(gl, data, num, type, attribute)
 		return false;
 	}
 	gl.vertexAttribPointer(a_attribute, num, type, false, 0, 0);
+	
 	// Enable the assignment of the buffer object to the attribute variable
 	gl.enableVertexAttribArray(a_attribute);
 	
 	return true;
 }
 
-function keyDown(ev, gl, n, u_ViewMatrix, viewMatrix)
+function keyDown(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix)
 {
-	if(ev.keyCode == 37) { centerX -= moveSpeed; } // The right arrow key was pressed
-	else if(ev.keyCode == 38) { centerY += moveSpeed; } // The up arrow key was pressed
-	else if(ev.keyCode == 39) { centerX += moveSpeed; } // The left arrow key was pressed
-	else if(ev.keyCode == 40) { centerY -= moveSpeed; } // The down arrow key was pressed
-	else if(ev.keyCode == 65) { eyeX -= moveSpeed; centerX -= moveSpeed; } // The A key was pressed
-	else if(ev.keyCode == 68) { eyeX += moveSpeed; centerX += moveSpeed; } // The D key was pressed
-	else if(ev.keyCode == 83) { // The S key was pressed
-		eyeZ -= moveSpeed;
-		centerZ -= moveSpeed;
-	}
-	else if(ev.keyCode == 87) { // The W key was pressed
-		eyeZ += moveSpeed;
-		centerZ += moveSpeed;
-	}
-    else { return; }
+	if(ev.keyCode == 37) { g_centerX -= g_moveSpeed; } // The right arrow key was pressed
+	if(ev.keyCode == 38) { g_centerY += g_moveSpeed; } // The up arrow key was pressed
+	if(ev.keyCode == 39) { g_centerX += g_moveSpeed; } // The left arrow key was pressed
+	if(ev.keyCode == 40) { g_centerY -= g_moveSpeed; } // The down arrow key was pressed
+	if(ev.keyCode == 65) { g_eyeX -= g_moveSpeed; } // The A key was pressed
+	if(ev.keyCode == 68) { g_eyeX += g_moveSpeed; } // The D key was pressed
+	if(ev.keyCode == 69) { g_eyeY -= g_moveSpeed; } // The E key was pressed
+	if(ev.keyCode == 81) { g_eyeY += g_moveSpeed; } // The Q key was pressed
+	if(ev.keyCode == 83) { g_eyeZ -= g_moveSpeed; } // The S key was pressed
+	if(ev.keyCode == 87) { g_eyeZ += g_moveSpeed; } // The W key was pressed
     
-	draw(gl, n, u_ViewMatrix, viewMatrix); // <===== MUST BE MOVED
+	draw(gl, n, VPMatrix, a_Position, u_MVPMatrix); // <===== MUST BE MOVED
 }
 
-function draw(gl, n, u_MVPMatrix, MVPMatrix)
-{
-	// Set the eye point and the viewing volume
-	MVPMatrix.setPerspective(30, 1, 1, 100);
-	MVPMatrix.lookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ);
-	
-	// Pass the view projection matrix
-	gl.uniformMatrix4fv(u_MVPMatrix, false, MVPMatrix.elements);
-	
+function draw(gl, n, VPMatrix, a_Position, u_MVPMatrix) {
 	// Clear color and depth buffer
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
-	setEyePos(eyeX, eyeY, eyeZ);
-	setRefPos(centerX, centerY, centerZ);
+	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 100.0);
+	VPMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ, g_centerX, g_centerY, g_centerZ, 0.0, 1.0, 0.0);
 	
-	// Draw the cube
+	for(var z = 0; z < size; z++)
+	{
+		for(var y = 0; y < size; y++)
+		{
+			for(var x = 0; x < size; x ++)
+			{
+				if(g_currStep[z][y][x] == 1)
+				{
+					g_modelMatrix.setTranslate(x * 3, y * 3, z * 3);
+					drawCube(gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
+				}
+			}
+		}
+	}
+	
+	/*
+	g_modelMatrix.setTranslate(0.0, 0.0, 0.0);
+	g_modelMatrix.translate(0.0, 0.0, 0.0);
+	g_modelMatrix.rotate(0.0, 1.0, 0.0, 0.0);
+    drawCube(gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
+	
+	g_modelMatrix.setTranslate(3.0, 0.0, 0.0);
+	g_modelMatrix.translate(0.0, 0.0, 0.0);
+	g_modelMatrix.rotate(0.0, 1.0, 0.0, 0.0);
+    drawCube(gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
+	
+	g_modelMatrix.setTranslate(6.0, 0.0, 0.0);
+	g_modelMatrix.translate(0.0, 0.0, 0.0);
+	g_modelMatrix.rotate(0.0, 1.0, 0.0, 0.0);
+    drawCube(gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
+	
+	g_modelMatrix.setTranslate(0.0, 3.0, 0.0);
+	g_modelMatrix.translate(0.0, 0.0, 0.0);
+	g_modelMatrix.rotate(0.0, 1.0, 0.0, 0.0);
+    drawCube(gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
+	
+	g_modelMatrix.setTranslate(-3.0, 0.0, 0.0);
+	g_modelMatrix.translate(0.0, 0.0, 0.0);
+	g_modelMatrix.rotate(0.0, 1.0, 0.0, 0.0);
+    drawCube(gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
+	
+	g_modelMatrix.setTranslate(0.0, -3.0, 0.0);
+	g_modelMatrix.translate(0.0, 0.0, 0.0);
+	g_modelMatrix.rotate(0.0, 1.0, 0.0, 0.0);
+    drawCube(gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
+	
+	g_modelMatrix.setTranslate(0.0, 0.0, 3.0);
+	g_modelMatrix.translate(0.0, 0.0, 0.0);
+	g_modelMatrix.rotate(0.0, 1.0, 0.0, 0.0);
+    drawCube(gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
+	
+	g_modelMatrix.setTranslate(0.0, 0.0, -3.0);
+	g_modelMatrix.translate(0.0, 0.0, 0.0);
+	g_modelMatrix.rotate(0.0, 1.0, 0.0, 0.0);
+    drawCube(gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
+	*/
+	
+	setEyePos(g_eyeX, g_eyeY, g_eyeZ);
+	setRefPos(g_centerX, g_centerY, g_centerZ);
+}
+
+function drawCube(gl, n, buffer, VPMatrix, a_Position, u_MVPMatrix)
+{
+	gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+	// Assign the buffer object to the attribute variable
+	gl.vertexAttribPointer(a_Position, buffer.num, buffer.type, false, 0, 0);
+	// Enable the assignment of the buffer object to the attribute variable
+	gl.enableVertexAttribArray(a_Position);
+	
+	// Calculate the model view project matrix and pass it to u_MVPMatrix
+	g_mvpMatrix.set(VPMatrix);
+	g_mvpMatrix.multiply(g_modelMatrix);
+	gl.uniformMatrix4fv(u_MVPMatrix, false, g_mvpMatrix.elements);
+	
+	// Draw
 	gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 }

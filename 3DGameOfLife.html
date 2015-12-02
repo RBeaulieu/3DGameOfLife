@@ -45,7 +45,7 @@
 		<h5 id="myh5">By: Raphael Beaulieu and Elliot Coy</h5>
 	</header>
 	<body onload="main()">
-		<canvas id="myWebGLCanvas" width="400" height="400">Your browser does not support the canvas tag.</canvas>
+		<canvas id="myWebGLCanvas" width="600" height="400">Your browser does not support the canvas tag.</canvas>
 		
 		<table id="myPlayTable" style="width:600px;">
 			<tr>
@@ -54,21 +54,21 @@
 					<button type="btnStop">Stop</button>
 					<button type="btnStop">Clear</button>
 				</td>
-				<td id="mySpeed" style>Speed: <input type="range" id="rngeSpeed" min="1" max="100" value="1" style="vertical-align:middle;"><td>
+				<td id="mySpeed" style>Speed: <input type="range" id="rngeSpeed" min="1" max="100" value="1" style="vertical-align:middle;" disabled><td>
 				<td id="myStepTitle" style="text-align:right;">Current Step:</td>
-				<td id="myStep" style="text-align:right;width:60px;">0</td>
+				<td id="myStep" style="text-align:right;width:60px;"></td>
 			</tr>
 		</table>
 		<table id="myGameTable" style="width:600px;">
 			<tr>
 				<td id="myTextboxes">
 					Type of Life: B
-					<input type="text" name="txtBVal" value="3" style="width:50px;">
+					<input type="text" name="txtBVal" value="3" style="width:50px;" disabled>
 					/S
-					<input type="text" name="txtSVal" value="2,3" style="width:50px;">
+					<input type="text" name="txtSVal" value="2,3" style="width:50px;" disabled>
 				</td>
 				<td id="myPopTitle" style="text-align:right;vertical-align:text-top;">Population:</td>
-				<td id="myPop" style="text-align:right;width:60px;vertical-align:text-top;">0</td>
+				<td id="myPop" style="text-align:right;width:60px;vertical-align:text-top;"></td>
 			</tr>
 		</table>
 		<table id="myCoordTable" style="width:600px;">
