@@ -1,6 +1,6 @@
 function test()
 {
-		//TEST STUFF FOR TESTING
+	//TEST STUFF FOR TESTING
 	
 	/*
 	var x = 5;
@@ -91,4 +91,6 @@ function test()
 	console.log(test);
 	console.log(test2);
 	*/
+	var blah = [];
+	console.log(blah.length);
 }

@@ -15,10 +15,23 @@ var g_eyeX = 4.0, g_eyeY = 12.0, g_eyeZ = 25.00;
 // Reference coordinates
 var g_centerX = 6.0, g_centerY = 3.0, g_centerZ = 3.0;
 
+//TEST GLOBAL VARS AND STUFF
+var g_gl = null;
+var g_n = null;
+var g_VPMatrix = null;
+var g_a_Position = null;
+var g_u_MVPMatrix = null;
+
+var isAlreadyUpdating = false;
+var isDrawing = false;
+
 var size = 5;
 
-function drawInit()
+function drawInit(currStep)
 {
+	g_currStep = currStep;
+	
+	/*
 	for(var z = 0; z < size; z++)
 	{
 		g_currStep[z] = [];
@@ -29,17 +42,19 @@ function drawInit()
 			
 			for(var x = 0; x < size; x ++)
 			{
-				if(z == 2 || y == 2 || x == 2)
-				{
-					g_currStep[z][y][x] = 1;
-				}
-				else
-				{
-					g_currStep[z][y][x] = 0;
-				}
+				//if(z == 2 || y == 2 || x == 2)
+				//{
+				//	g_currStep[z][y][x] = 1;
+				//}
+				//else
+				//{
+				//	g_currStep[z][y][x] = 0;
+				//}
+				//g_currStep[z][y][x] = 0;
 			}
 		}
-	}
+	}*/
+	
 	console.log(g_currStep);
 	
 	// Retrieve <canvas> element
@@ -85,6 +100,12 @@ function drawInit()
 	
 	// Register the event handler to be called on key press
 	document.onkeydown = function(ev){ keyDown(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix); };
+	
+	g_gl = gl;
+	g_n = n;
+	g_VPMatrix = VPMatrix;
+	g_a_Position = a_Position;
+	g_u_MVPMatrix = u_MVPMatrix;
 	
 	draw(gl, n, VPMatrix, a_Position, u_MVPMatrix); // Draw
 }
@@ -220,6 +241,8 @@ function keyDown(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix)
 }
 
 function draw(gl, n, VPMatrix, a_Position, u_MVPMatrix) {
+	isDrawing = true;
+	
 	// Clear color and depth buffer
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
@@ -285,6 +308,14 @@ function draw(gl, n, VPMatrix, a_Position, u_MVPMatrix) {
 	
 	setEyePos(g_eyeX, g_eyeY, g_eyeZ);
 	setRefPos(g_centerX, g_centerY, g_centerZ);
+	
+	if(!isAlreadyUpdating)
+	{
+		isAlreadyUpdating = true;
+		setTimeout(generateNextStep, 2000);
+	}
+	
+	isDrawing = false;
 }
 
 function drawCube(gl, n, buffer, VPMatrix, a_Position, u_MVPMatrix)
@@ -302,4 +333,16 @@ function drawCube(gl, n, buffer, VPMatrix, a_Position, u_MVPMatrix)
 	
 	// Draw
 	gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+}
+
+function canDraw()
+{
+	return !isDrawing;
+}
+
+function drawNonCamUpdate(currStep)
+{
+	g_currStep = currStep;
+	isAlreadyUpdating = false;
+	draw(g_gl, g_n, g_VPMatrix, g_a_Position, g_u_MVPMatrix);
 }

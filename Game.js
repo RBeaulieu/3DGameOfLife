@@ -7,24 +7,17 @@ var currChangeSet = {}
 var bSet = {};
 var sSet = {};
 var size = 5;
+var step = 0;
 
 function main()
 {
-	drawInit();
 	gameInit();
 	
-	test();
+	//test();
 	
-	//TEST
-	currChangeSet["222"] = true;
-	currStep[2][2][2] = 1;
+	//generateNextStep();
 	
-	bSet["2"] = true;
-	sSet["3"] = true;
-	
-	generateNextStep();
-	
-	console.log(currStep);
+	//console.log(currStep);
 }
 
 function gameInit()
@@ -43,13 +36,29 @@ function gameInit()
 			{
 				prevStep[z][y][x] = 0;
 				currStep[z][y][x] = 0;
+				currChangeSet[x.toString() + y.toString() + z.toString()] = true;
 			}
 		}
 	}
+	
+	console.log(currChangeSet);
+	
+	currStep[2][2][3] = 1;
+	currStep[2][2][1] = 1;
+	currStep[2][3][2] = 1;
+	currStep[2][1][2] = 1;
+	currStep[2][2][2] = 1;
+	
+	bSet["3"] = true;
+	sSet["2"] = true;
+	sSet["3"] = true;
+	
+	drawInit(currStep);
 }
 
 function generateNextStep()
 {
+	console.log("------------ step " + step + "------------");
 	prevStep = currStep;
 	currStep = prevStep.map(function(outerArr) { return outerArr.map(function(innerArr) { return innerArr.slice(); }) });  // Makes deep copy of 3D array
 	prevChangeSet = currChangeSet;
@@ -85,19 +94,43 @@ function generateNextStep()
 			}
 		}
 		
+		console.log("point: " + loc);
+		console.log("count: " + count);
+		
 		if(prevStep[z][y][x] != 0)
 		{
+			//console.log(localNodes);
 			if(sSet[count.toString()] === undefined)
 			{
 				currStep[z][y][x] = 0;
 				for(let chng of localNodes)	{ currChangeSet[chng] = true; }
 			}
-			
+		}
+		else
+		{
+			//console.log(localNodes);
 			if(bSet[count.toString()] !== undefined)
 			{
-				prevStep[z][y][x] = 1;
+				currStep[z][y][x] = 1;
 				for(let chng of localNodes)	{ currChangeSet[chng] = true; }
-			}
+			}			
 		}
 	}
+	
+	//console.log(currChangeSet);
+	step++;
+	timeout();
+}
+
+function timeout() {
+	setTimeout(function(){
+		if(canDraw())
+		{
+			drawNonCamUpdate(currStep);
+		}
+		else
+		{
+			timeout();
+		}
+	}, 20);
 }
