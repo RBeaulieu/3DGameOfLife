@@ -9,6 +9,9 @@ var sSet = {};
 var size = 5;
 var step = 0;
 
+//For demo day
+var checkAllChangeSet = {};
+
 function main()
 {
 	gameInit();
@@ -41,7 +44,8 @@ function gameInit()
 		}
 	}
 	
-	console.log(currChangeSet);
+	//console.log(currChangeSet);
+	checkAllChangeSet = currChangeSet;
 	
 	currStep[2][2][3] = 1;
 	currStep[2][2][1] = 1;
@@ -64,7 +68,7 @@ function generateNextStep()
 	prevChangeSet = currChangeSet;
 	currChangeSet = {};
 	
-	for(let loc in prevChangeSet) {
+	for(let loc in checkAllChangeSet) {
 		var count = 0;
 		var localNodes = [];
 		var localNodesCount = 0;
