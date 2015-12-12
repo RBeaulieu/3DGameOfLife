@@ -46,16 +46,21 @@ function gameInit()
 	
 	//console.log(currChangeSet);
 	checkAllChangeSet = currChangeSet;
-	
+		
 	currStep[2][2][3] = 1;
 	currStep[2][2][1] = 1;
 	currStep[2][3][2] = 1;
 	currStep[2][1][2] = 1;
 	currStep[2][2][2] = 1;
-	
+
+
+	bSet["1"] = true;
+	bSet["2"] = true;
 	bSet["3"] = true;
-	sSet["2"] = true;
-	sSet["3"] = true;
+	sSet["5"] = true;
+	sSet["7"] = true;
+	sSet["9"] = true;
+
 	
 	drawInit(currStep);
 }

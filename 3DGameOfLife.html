@@ -6,6 +6,15 @@
 		<title id="myTitle">3D Conway's Game of Life</title>
 		<style type="text/css">
 			<!-- -->
+	      html,body,canvas{
+	      	padding:10px;
+    		background-color: #000;
+	        font-family: "Courier New", "lucida console";
+	        font-weight: bold;
+	       	color: #FFF;
+	        height: 75%;
+	        padding-right: 25%;
+	      }
 		</style>
 		<script src="lib/webgl-utils.js"></script>
 		<script src="lib/webgl-debug.js"></script>
@@ -71,16 +80,20 @@
 				<td id="myPop" style="text-align:right;width:60px;vertical-align:text-top;"></td>
 			</tr>
 		</table>
-		<table id="myCoordTable" style="width:600px;">
+		<table id="myCoordTable" style="width:400px;">
+			<tr style="height:50pt;">
+				<td id="myCamTitle" style="width:105px;">Camera Coords:</td>  <td>(</td>
+					<td id="myCamX" style="width:50px;text-align:left;">0</td><td>,</td>
+					<td id="myCamY" style="width:50px;text-align:left;">0</td><td>,</td>
+					<td id="myCamZ" style="width:50px;text-align:left;">0</td>
+						<td style="padding-right:1px;">)</td>
+			</tr>
 			<tr>
-				<td id="myCamTitle" style="width:105px;">Camera Coords:</td><td>(</td>
-				<td id="myCamX" style="text-align:right;">0</td><td>,</td>
-				<td id="myCamY" style="text-align:right;">0</td><td>,</td>
-				<td id="myCamZ" style="text-align:right;">0</td><td style="padding-right:20px">)</td>
-				<td id="myLookTitle" style="width:115px;">Look At Coords:</td><td>(</td>
-				<td id="myLookX" style="text-align:right;">0</td><td>,</td>
-				<td id="myLookY" style="text-align:right;">0</td><td>,</td>
-				<td id="myLookZ" style="text-align:right;">0</td><td style="text-align:right;width:1px;">)</td>
+				<td id="myLookTitle" style="width:100px;">Look At Coords:</td> <td>(</td>
+					<td id="myLookX" style="width:50px;text-align:left;">0</td><td>,</td>
+					<td id="myLookY" style="width:50px;text-align:left;">0</td><td>,</td>
+					<td id="myLookZ" style="width:50px;text-align:left;">0</td>
+						<td style="text-align:right;width:1px;">)</td>
 			</tr>
 		</table>
 		

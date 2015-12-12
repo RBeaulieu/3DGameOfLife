@@ -27,10 +27,19 @@ var isDrawing = false;
 
 var size = 5;
 
+//******************
+//KEYDOWN VARIABLES
+//******************
+
+var gl
+var n
+var VPMatrix
+var a_Position
+var u_MVPMatrix
+
 function drawInit(currStep)
 {
 	g_currStep = currStep;
-	
 	/*
 	for(var z = 0; z < size; z++)
 	{
@@ -42,18 +51,22 @@ function drawInit(currStep)
 			
 			for(var x = 0; x < size; x ++)
 			{
-				//if(z == 2 || y == 2 || x == 2)
-				//{
-				//	g_currStep[z][y][x] = 1;
-				//}
-				//else
-				//{
-				//	g_currStep[z][y][x] = 0;
-				//}
+				/*
+				if(z == 0 || y == 0 || x == 4)
+				{
+					g_currStep[z][y][x] = 1;
+				}
+				/*
+				else
+				{
+					g_currStep[z][y][x] = 0;
+				}
+				
 				//g_currStep[z][y][x] = 0;
 			}
 		}
-	}*/
+	}
+	*/
 	
 	console.log(g_currStep);
 	
@@ -61,7 +74,7 @@ function drawInit(currStep)
 	var canvas = document.getElementById('myWebGLCanvas');
 	
 	// Get the rendering context for WebGL
-	var gl = getWebGLContext(canvas);
+	gl = getWebGLContext(canvas);
 	if (!gl) {
 		console.log('*** Error: Failed to get the rendering context for WebGL');
 		return;
@@ -77,7 +90,7 @@ function drawInit(currStep)
 		return;
 	}
 	// Set vertex information
-	var n = initVertexBuffers(gl);
+	n = initVertexBuffers(gl);
 	if (n < 0) {
 		console.log('*** Error: Failed to set the vertex information');
 		return;
@@ -88,15 +101,15 @@ function drawInit(currStep)
 	gl.enable(gl.DEPTH_TEST);
 	
 	// Get the storage locations of attribute and uniform variables
-	var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-	var u_MVPMatrix = gl.getUniformLocation(gl.program, 'u_MVPMatrix');
+	a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+	u_MVPMatrix = gl.getUniformLocation(gl.program, 'u_MVPMatrix');
 	if (a_Position < 0 || !u_MVPMatrix) {
 		console.log('*** Error: Failed to get the storage location of attribute or uniform variable');
 		return;
 	}
 	
 	// Calculate the view projection matrix
-	var VPMatrix = new Matrix4();
+	VPMatrix = new Matrix4();
 	
 	// Register the event handler to be called on key press
 	document.onkeydown = function(ev){ keyDown(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix); };
@@ -224,7 +237,8 @@ function initArrayBuffer(gl, attribute, data, num, type)
 	return true;
 }
 
-function keyDown(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix)
+//function keyDown(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix)
+function keyDown(ev, time)
 {
 	if(ev.keyCode == 37) { g_centerX -= g_moveSpeed; } // The right arrow key was pressed
 	if(ev.keyCode == 38) { g_centerY += g_moveSpeed; } // The up arrow key was pressed
@@ -238,8 +252,9 @@ function keyDown(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix)
 	if(ev.keyCode == 87) { g_eyeZ += g_moveSpeed; } // The W key was pressed
     
 	draw(gl, n, VPMatrix, a_Position, u_MVPMatrix); // <===== MUST BE MOVED
-}
 
+
+}
 function draw(gl, n, VPMatrix, a_Position, u_MVPMatrix) {
 	isDrawing = true;
 	
