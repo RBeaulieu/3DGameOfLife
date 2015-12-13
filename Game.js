@@ -96,6 +96,7 @@ function generateNextStep()
 								if(!(k == 0 && j == 0 && i == 0) && prevStep[z + k][y + j][x + i] != 0) { count++; }
 								//put location in localNodes
 								localNodes[localNodesCount] = (x + i).toString() + (y + j).toString() + (z + k).toString();
+								localNodesCount++;
 							}
 						}
 					}

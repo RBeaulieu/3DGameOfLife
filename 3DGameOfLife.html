@@ -38,9 +38,7 @@
 			}
 		</script>
 		<script id="shader-fs" type="x-shader/x-fragment">
-			#ifdef GL_ES
-				precision mediump float;
-			#endif
+			precision mediump float;
 			
 			varying vec4 v_Color;
 			
@@ -59,22 +57,23 @@
 		<table id="myPlayTable" style="width:600px;">
 			<tr>
 				<td id="myButtons">
-					<button type="btnStart" onclick="start()">Start</button>
-					<button type="btnStop">Stop</button>
-					<button type="btnStop">Clear</button>
+					<button type="btnStart" onclick="gameStart()">Start</button>
+					<button type="btnStop" onclick="gameStop()">Stop</button>
+					<button type="btnClear" onclick="gameClear()">Clear</button>
 				</td>
-				<td id="mySpeed" style>Speed: <input type="range" id="rngeSpeed" min="1" max="100" value="1" style="vertical-align:middle;" disabled><td>
+				<td id="mySpeedRange" style="text-align:right;">Speed: <input type="range" min="1" max="100" value="1" style="vertical-align:middle;" oninput="updateSpeed(this.value)"><td>
+				<td id="mySpeed" style="text-align:left;">1<td>
 				<td id="myStepTitle" style="text-align:right;">Current Step:</td>
 				<td id="myStep" style="text-align:right;width:60px;"></td>
 			</tr>
 		</table>
 		<table id="myGameTable" style="width:600px;">
 			<tr>
-				<td id="myTextboxes">
+				<td id="myTextBoxes">
 					Type of Life: B
-					<input type="text" name="txtBVal" value="3" style="width:50px;" disabled>
+					<input type="text" id="txtBVal" value="3" style="width:50px;">
 					/S
-					<input type="text" name="txtSVal" value="2,3" style="width:50px;" disabled>
+					<input type="text" id="txtSVal" value="2,3" style="width:50px;">
 				</td>
 				<td id="myPopTitle" style="text-align:right;vertical-align:text-top;">Population:</td>
 				<td id="myPop" style="text-align:right;width:60px;vertical-align:text-top;"></td>
