@@ -73,7 +73,7 @@ function generateNextStep()
 	prevChangeSet = currChangeSet;
 	currChangeSet = {};
 	
-	for(let loc in checkAllChangeSet) {
+	for(var loc in checkAllChangeSet) {
 		var count = 0;
 		var localNodes = [];
 		var localNodesCount = 0;
@@ -112,7 +112,7 @@ function generateNextStep()
 			if(sSet[count.toString()] === undefined)
 			{
 				currStep[z][y][x] = 0;
-				for(let chng of localNodes)	{ currChangeSet[chng] = true; }
+				for(var chng of localNodes)	{ currChangeSet[chng] = true; }
 			}
 		}
 		else
@@ -121,7 +121,7 @@ function generateNextStep()
 			if(bSet[count.toString()] !== undefined)
 			{
 				currStep[z][y][x] = 1;
-				for(let chng of localNodes)	{ currChangeSet[chng] = true; }
+				for(var chng of localNodes)	{ currChangeSet[chng] = true; }
 			}			
 		}
 	}
