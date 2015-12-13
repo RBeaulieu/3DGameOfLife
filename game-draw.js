@@ -261,7 +261,7 @@ function draw(highResTimestamp) {
 	requestAnimationFrame(draw);
 
 	//CHECK FPS
-	//setTimeout(getFPS, 0);
+	setTimeout(getFPS, 0);
 
 	// Clear color and depth buffer
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -286,12 +286,11 @@ function draw(highResTimestamp) {
 	}
 }
 
-/*CHECK FPS
 function getFPS(){
 	console.timeEnd('fps');
 	console.time('fps');
 }
-*/
+
 
 function drawCube(gl, n, buffer, VPMatrix, a_Position, u_MVPMatrix)
 {
