@@ -30,17 +30,19 @@ var size = 5;
 //******************
 //KEYDOWN VARIABLES
 //******************
-
 var gl
 var n
 var VPMatrix
 var a_Position
 var u_MVPMatrix
 
+var fpsTime = 0;
+
+
 function drawInit(currStep)
 {
 	g_currStep = currStep;
-	/*
+	
 	for(var z = 0; z < size; z++)
 	{
 		g_currStep[z] = [];
@@ -51,12 +53,12 @@ function drawInit(currStep)
 			
 			for(var x = 0; x < size; x ++)
 			{
-				/*
+				
 				if(z == 0 || y == 0 || x == 4)
 				{
 					g_currStep[z][y][x] = 1;
 				}
-				/*
+				
 				else
 				{
 					g_currStep[z][y][x] = 0;
@@ -66,7 +68,6 @@ function drawInit(currStep)
 			}
 		}
 	}
-	*/
 	
 	//console.log(g_currStep);
 	
@@ -243,7 +244,7 @@ function initArrayBuffer(gl, attribute, data, num, type)
 }
 
 //function keyDown(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix)
-function keyDown(ev, time)
+function keyDown(ev)
 {
 	if(ev.keyCode == 37) { g_centerX -= g_moveSpeed; } // The right arrow key was pressed
 	if(ev.keyCode == 38) { g_centerY += g_moveSpeed; } // The up arrow key was pressed
@@ -255,20 +256,25 @@ function keyDown(ev, time)
 	if(ev.keyCode == 81) { g_eyeY += g_moveSpeed; } // The Q key was pressed
 	if(ev.keyCode == 83) { g_eyeZ -= g_moveSpeed; } // The S key was pressed
 	if(ev.keyCode == 87) { g_eyeZ += g_moveSpeed; } // The W key was pressed
-    
-	draw(gl, n, VPMatrix, a_Position, u_MVPMatrix); // <===== MUST BE MOVED
 
+	setEyePos(g_eyeX, g_eyeY, g_eyeZ);
+	setRefPos(g_centerX, g_centerY, g_centerZ);
 
 }
-function draw(gl, n, VPMatrix, a_Position, u_MVPMatrix) {
-	isDrawing = true;
-	
+
+function draw(highResTimestamp) {
+	requestAnimationFrame(draw);
+
+	//CHECK FPS
+	//setTimeout(getFPS, 0);
+
 	// Clear color and depth buffer
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
 	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 100.0);
 	VPMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ, g_centerX, g_centerY, g_centerZ, 0.0, 1.0, 0.0);
 	
+	//Read the 3D Array
 	for(var z = 0; z < size; z++)
 	{
 		for(var y = 0; y < size; y++)
@@ -283,60 +289,14 @@ function draw(gl, n, VPMatrix, a_Position, u_MVPMatrix) {
 			}
 		}
 	}
-	
-	/*
-	g_modelMatrix.setTranslate(0.0, 0.0, 0.0);
-	g_modelMatrix.translate(0.0, 0.0, 0.0);
-	g_modelMatrix.rotate(0.0, 1.0, 0.0, 0.0);
-    drawCube(gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
-	
-	g_modelMatrix.setTranslate(3.0, 0.0, 0.0);
-	g_modelMatrix.translate(0.0, 0.0, 0.0);
-	g_modelMatrix.rotate(0.0, 1.0, 0.0, 0.0);
-    drawCube(gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
-	
-	g_modelMatrix.setTranslate(6.0, 0.0, 0.0);
-	g_modelMatrix.translate(0.0, 0.0, 0.0);
-	g_modelMatrix.rotate(0.0, 1.0, 0.0, 0.0);
-    drawCube(gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
-	
-	g_modelMatrix.setTranslate(0.0, 3.0, 0.0);
-	g_modelMatrix.translate(0.0, 0.0, 0.0);
-	g_modelMatrix.rotate(0.0, 1.0, 0.0, 0.0);
-    drawCube(gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
-	
-	g_modelMatrix.setTranslate(-3.0, 0.0, 0.0);
-	g_modelMatrix.translate(0.0, 0.0, 0.0);
-	g_modelMatrix.rotate(0.0, 1.0, 0.0, 0.0);
-    drawCube(gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
-	
-	g_modelMatrix.setTranslate(0.0, -3.0, 0.0);
-	g_modelMatrix.translate(0.0, 0.0, 0.0);
-	g_modelMatrix.rotate(0.0, 1.0, 0.0, 0.0);
-    drawCube(gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
-	
-	g_modelMatrix.setTranslate(0.0, 0.0, 3.0);
-	g_modelMatrix.translate(0.0, 0.0, 0.0);
-	g_modelMatrix.rotate(0.0, 1.0, 0.0, 0.0);
-    drawCube(gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
-	
-	g_modelMatrix.setTranslate(0.0, 0.0, -3.0);
-	g_modelMatrix.translate(0.0, 0.0, 0.0);
-	g_modelMatrix.rotate(0.0, 1.0, 0.0, 0.0);
-    drawCube(gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
-	*/
-	
-	setEyePos(g_eyeX, g_eyeY, g_eyeZ);
-	setRefPos(g_centerX, g_centerY, g_centerZ);
-	
-	if(!isAlreadyUpdating)
-	{
-		isAlreadyUpdating = true;
-		setTimeout(generateNextStep, 2000);
-	}
-	
-	isDrawing = false;
 }
+
+/*CHECK FPS
+function getFPS(){
+	console.timeEnd('fps');
+	console.time('fps');
+}
+*/
 
 function drawCube(gl, n, buffer, VPMatrix, a_Position, u_MVPMatrix)
 {

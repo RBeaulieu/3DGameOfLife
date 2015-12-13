@@ -73,7 +73,11 @@ function generateNextStep()
 	prevChangeSet = currChangeSet;
 	currChangeSet = {};
 	
+<<<<<<< HEAD
 	for(let loc in prevChangeSet) {
+=======
+	for(var loc in checkAllChangeSet) {
+>>>>>>> refs/remotes/origin/Elliot
 		var count = 0;
 		var localNodes = [];
 		var localNodesCount = 0;
@@ -113,7 +117,7 @@ function generateNextStep()
 			if(sSet[count.toString()] === undefined)
 			{
 				currStep[z][y][x] = 0;
-				for(let chng of localNodes)	{ currChangeSet[chng] = true; }
+				for(var chng of localNodes)	{ currChangeSet[chng] = true; }
 			}
 		}
 		else
@@ -122,7 +126,7 @@ function generateNextStep()
 			if(bSet[count.toString()] !== undefined)
 			{
 				currStep[z][y][x] = 1;
-				for(let chng of localNodes)	{ currChangeSet[chng] = true; }
+				for(var chng of localNodes)	{ currChangeSet[chng] = true; }
 			}			
 		}
 	}
