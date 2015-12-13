@@ -67,13 +67,13 @@ function gameInit()
 
 function generateNextStep()
 {
-	console.log("------------ step " + step + "------------");
+	console.log("------------ step " + step + " ------------");
 	prevStep = currStep;
 	currStep = prevStep.map(function(outerArr) { return outerArr.map(function(innerArr) { return innerArr.slice(); }) });  // Makes deep copy of 3D array
 	prevChangeSet = currChangeSet;
 	currChangeSet = {};
 	
-	for(let loc in checkAllChangeSet) {
+	for(let loc in prevChangeSet) {
 		var count = 0;
 		var localNodes = [];
 		var localNodesCount = 0;
@@ -96,6 +96,7 @@ function generateNextStep()
 								if(!(k == 0 && j == 0 && i == 0) && prevStep[z + k][y + j][x + i] != 0) { count++; }
 								//put location in localNodes
 								localNodes[localNodesCount] = (x + i).toString() + (y + j).toString() + (z + k).toString();
+								localNodesCount++;
 							}
 						}
 					}
@@ -103,8 +104,8 @@ function generateNextStep()
 			}
 		}
 		
-		console.log("point: " + loc);
-		console.log("count: " + count);
+		//console.log("point: " + loc);
+		//console.log("count: " + count);
 		
 		if(prevStep[z][y][x] != 0)
 		{

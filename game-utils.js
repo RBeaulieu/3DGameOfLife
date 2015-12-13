@@ -91,6 +91,7 @@ function test()
 	console.log(test);
 	console.log(test2);
 	*/
-	var blah = [];
-	console.log(blah.length);
+	
+	//var blah = [];
+	//console.log(blah.length);
 }

@@ -68,7 +68,7 @@ function drawInit(currStep)
 	}
 	*/
 	
-	console.log(g_currStep);
+	//console.log(g_currStep);
 	
 	// Retrieve <canvas> element
 	var canvas = document.getElementById('myWebGLCanvas');
@@ -96,9 +96,14 @@ function drawInit(currStep)
 		return;
 	}
 	
-	// Specify the color for clearing <canvas> and enable depth testing
+	// Specify the color for clearing <canvas>
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
+	// Enable depth testing
 	gl.enable(gl.DEPTH_TEST);
+	// Turn on face culling
+	gl.enable(gl.CULL_FACE);
+	// Set to cull back faces
+	gl.cullFace(gl.BACK);
 	
 	// Get the storage locations of attribute and uniform variables
 	a_Position = gl.getAttribLocation(gl.program, 'a_Position');
