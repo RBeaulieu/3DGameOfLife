@@ -72,12 +72,8 @@ function generateNextStep()
 	currStep = prevStep.map(function(outerArr) { return outerArr.map(function(innerArr) { return innerArr.slice(); }) });  // Makes deep copy of 3D array
 	prevChangeSet = currChangeSet;
 	currChangeSet = {};
-	
-<<<<<<< HEAD
-	for(let loc in prevChangeSet) {
-=======
+
 	for(var loc in checkAllChangeSet) {
->>>>>>> refs/remotes/origin/Elliot
 		var count = 0;
 		var localNodes = [];
 		var localNodesCount = 0;
