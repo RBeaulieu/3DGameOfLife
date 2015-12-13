@@ -265,7 +265,7 @@ function keyDown(ev)
 function draw(highResTimestamp) {
 	requestAnimationFrame(draw);
 
-	//CHECK FPS
+	//CHECK FPS In Console
 	//setTimeout(getFPS, 0);
 
 	// Clear color and depth buffer
