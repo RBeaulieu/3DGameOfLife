@@ -73,11 +73,7 @@ function generateNextStep()
 	prevChangeSet = currChangeSet;
 	currChangeSet = {};
 	
-<<<<<<< HEAD
-	for(let loc in prevChangeSet) {
-=======
-	for(var loc in checkAllChangeSet) {
->>>>>>> refs/remotes/origin/Elliot
+	for(var loc in prevChangeSet) {
 		var count = 0;
 		var localNodes = [];
 		var localNodesCount = 0;
