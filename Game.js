@@ -6,7 +6,7 @@ var prevChangeSet = {};
 var currChangeSet = {};
 var bSet = {};
 var sSet = {};
-var size = 25;
+var size = 20;
 var step = 0;
 
 //For demo day

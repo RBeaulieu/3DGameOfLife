@@ -9,11 +9,11 @@ var g_cubeBuffer = null;
 // Coordinate transformation matrix
 var g_modelMatrix = new Matrix4(), g_mvpMatrix = new Matrix4();
 // Movement speed
-var g_moveSpeed = 0.1;
+var g_moveSpeed = 0.5;
 // Eye coordinates
-var g_eyeX = 4.0, g_eyeY = 12.0, g_eyeZ = 25.00;
+var g_eyeX = 0.0, g_eyeY = 0.0, g_eyeZ = 70.00;
 // Reference coordinates
-var g_centerX = 6.0, g_centerY = 3.0, g_centerZ = 3.0;
+var g_centerX = 0.0, g_centerY = 0.0, g_centerZ = 10.0;
 
 //TEST GLOBAL VARS AND STUFF
 var g_gl = null;
@@ -25,16 +25,16 @@ var g_u_MVPMatrix = null;
 var isAlreadyUpdating = false;
 var isDrawing = false;
 
-//var size = 20;
-
 //******************
 //KEYDOWN VARIABLES
 //******************
-var gl
-var n
-var VPMatrix
-var a_Position
-var u_MVPMatrix
+var gl;
+var n;
+var VPMatrix;
+var a_Position;
+var u_MVPMatix;
+var fps = 1;
+var controlSet = [];
 
 function drawInit(currStep)
 {
@@ -50,8 +50,7 @@ function drawInit(currStep)
 			
 			for(var x = 0; x < size; x ++)
 			{
-				
-				if(z == 0 || y == 0 || x == 0)
+				if(z >= 0 || y >= 0 || x >= 0)
 				{
 					g_currStep[z][y][x] = 1;
 				}
@@ -116,6 +115,7 @@ function drawInit(currStep)
 	
 	// Register the event handler to be called on key press
 	document.onkeydown = function(ev){ keyDown(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix); };
+	document.onkeyup = function(ev){ keyUp(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix); };
 	
 	g_gl = gl;
 	g_n = n;
@@ -165,7 +165,7 @@ function initVertexBuffers(gl)
 		0.4, 1.0, 0.4,  0.4, 1.0, 0.4,  0.4, 1.0, 0.4,  0.4, 1.0, 0.4,  // v0-v3-v4-v5 right(green)
 		1.0, 0.4, 0.4,  1.0, 0.4, 0.4,  1.0, 0.4, 0.4,  1.0, 0.4, 0.4,  // v0-v5-v6-v1 up(red)
 		1.0, 1.0, 0.4,  1.0, 1.0, 0.4,  1.0, 1.0, 0.4,  1.0, 1.0, 0.4,  // v1-v6-v7-v2 left
-		1.0, 1.0, 1.0,  1.0, 1.0, 1.0,  1.0, 1.0, 1.0,  1.0, 1.0, 1.0,  // v7-v4-v3-v2 down
+		0.2, 0.3, 0.4,  0.2, 0.3, 0.4,  0.2, 0.3, 0.4,  0.2, 0.3, 0.4,  // v7-v4-v3-v2 down
 		0.4, 1.0, 1.0,  0.4, 1.0, 1.0,  0.4, 1.0, 1.0,  0.4, 1.0, 1.0   // v4-v7-v6-v5 back
 	]);
 	
@@ -243,31 +243,40 @@ function initArrayBuffer(gl, attribute, data, num, type)
 //function keyDown(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix)
 function keyDown(ev)
 {
-	if(ev.keyCode == 37) { g_centerX -= g_moveSpeed; } // The right arrow key was pressed
-	if(ev.keyCode == 38) { g_centerY += g_moveSpeed; } // The up arrow key was pressed
-	if(ev.keyCode == 39) { g_centerX += g_moveSpeed; } // The left arrow key was pressed
-	if(ev.keyCode == 40) { g_centerY -= g_moveSpeed; } // The down arrow key was pressed
-	if(ev.keyCode == 65) { g_eyeX -= g_moveSpeed; } // The A key was pressed
-	if(ev.keyCode == 68) { g_eyeX += g_moveSpeed; } // The D key was pressed
-	if(ev.keyCode == 69) { g_eyeY -= g_moveSpeed; } // The E key was pressed
-	if(ev.keyCode == 81) { g_eyeY += g_moveSpeed; } // The Q key was pressed
-	if(ev.keyCode == 83) { g_eyeZ -= g_moveSpeed; } // The S key was pressed
-	if(ev.keyCode == 87) { g_eyeZ += g_moveSpeed; } // The W key was pressed
+	if(ev.keyCode == 37) { controlSet[37] = 1; } // The right arrow key was pressed
+	if(ev.keyCode == 38) { controlSet[38] = 1; } // The up arrow key was pressed
+	if(ev.keyCode == 39) { controlSet[39] = 1; } // The left arrow key was pressed
+	if(ev.keyCode == 40) { controlSet[40] = 1; } // The down arrow key was pressed
+	if(ev.keyCode == 65) { controlSet[65] = 1; } // The A key was pressed
+	if(ev.keyCode == 68) { controlSet[68] = 1; } // The D key was pressed
+	if(ev.keyCode == 69) { controlSet[69] = 1; } // The E key was pressed
+	if(ev.keyCode == 81) { controlSet[81] = 1; } // The Q key was pressed
+	if(ev.keyCode == 83) { controlSet[83] = 1; } // The S key was pressed
+	if(ev.keyCode == 87) { controlSet[87] = 1; } // The W key was pressed
+}
 
-	setEyePos(g_eyeX, g_eyeY, g_eyeZ);
-	setRefPos(g_centerX, g_centerY, g_centerZ);
-
+function keyUp(ev)
+{
+	if(ev.keyCode == 37) { controlSet[37] = 0; } // The right arrow key was released
+	if(ev.keyCode == 38) { controlSet[38] = 0; } // The up arrow key was released
+	if(ev.keyCode == 39) { controlSet[39] = 0; } // The left arrow key was released
+	if(ev.keyCode == 40) { controlSet[40] = 0; } // The down arrow key was released
+	if(ev.keyCode == 65) { controlSet[65] = 0; } // The A key was released
+	if(ev.keyCode == 68) { controlSet[68] = 0; } // The D key was released
+	if(ev.keyCode == 69) { controlSet[69] = 0; } // The E key was released
+	if(ev.keyCode == 81) { controlSet[81] = 0; } // The Q key was released
+	if(ev.keyCode == 83) { controlSet[83] = 0; } // The S key was released
+	if(ev.keyCode == 87) { controlSet[87] = 0; } // The W key was released
 }
 
 function draw(highResTimestamp) {
 	requestAnimationFrame(draw);
-	
 	//console.time('fps');
 	
 	// Clear color and depth buffer
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 100.0);
+	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 200.0);
 	VPMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ, g_centerX, g_centerY, g_centerZ, 0.0, 1.0, 0.0);
 	
 	//Read the 3D Array
@@ -285,9 +294,21 @@ function draw(highResTimestamp) {
 			}
 		}
 	}
-	
 	//console.timeEnd('fps');
-	
+
+	if(controlSet[37]){ g_centerX -= g_moveSpeed; }	// The right arrow key was released
+	if(controlSet[38]){ g_centerY += g_moveSpeed; }	// The up arrow key was released
+	if(controlSet[39]){ g_centerX += g_moveSpeed; }	// The left arrow key was released
+	if(controlSet[40]){ g_centerY -= g_moveSpeed; }	// The down arrow key was released
+	if(controlSet[65]){ g_eyeX -= g_moveSpeed; g_centerX -= g_moveSpeed; }	// The A key was released
+	if(controlSet[68]){ g_eyeX += g_moveSpeed; g_centerX += g_moveSpeed;}	// The D key was released
+	if(controlSet[69]){ g_eyeY -= g_moveSpeed; }	// The E key was released
+	if(controlSet[81]){ g_eyeY += g_moveSpeed; }	// The Q key was released
+	if(controlSet[83]){ g_eyeZ -= g_moveSpeed; }	// The S key was released
+	if(controlSet[87]){ g_eyeZ += g_moveSpeed; }	// The W key was released
+
+	setEyePos(g_eyeX, g_eyeY, g_eyeZ);
+	setRefPos(g_centerX, g_centerY, g_centerZ);
 }
 
 function drawCube(gl, n, buffer, VPMatrix, a_Position, u_MVPMatrix)
