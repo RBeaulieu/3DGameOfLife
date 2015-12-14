@@ -15,7 +15,7 @@ function gameClear()
 
 function updateSpeed(newVal)
 {
-	document.getElementById('mySpeedLbl').innerHTML = newVal;
+	document.getElementById('mySpeed').innerHTML = newVal;
 }
 
 function enableToL()

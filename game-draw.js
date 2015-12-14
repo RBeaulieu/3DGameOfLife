@@ -15,16 +15,6 @@ var g_eyeX = 0.0, g_eyeY = 0.0, g_eyeZ = 70.00;
 // Reference coordinates
 var g_centerX = 0.0, g_centerY = 0.0, g_centerZ = 10.0;
 
-//TEST GLOBAL VARS AND STUFF
-var g_gl = null;
-var g_n = null;
-var g_VPMatrix = null;
-var g_a_Position = null;
-var g_u_MVPMatrix = null;
-
-var isAlreadyUpdating = false;
-var isDrawing = false;
-
 //******************
 //KEYDOWN VARIABLES
 //******************
@@ -32,13 +22,10 @@ var gl;
 var n;
 var VPMatrix;
 var a_Position;
-var u_MVPMatix;
+var u_MVPMatrix;
 var controlSet = [];
 
-function drawInit(currStep)
-{
-	g_currStep = currStep;
-	
+function testCubes() {
 	for(var z = 0; z < size; z++)
 	{
 		g_currStep[z] = [];
@@ -64,7 +51,14 @@ function drawInit(currStep)
 		}
 	}
 	
-	//console.log(g_currStep);
+}
+
+function drawInit(currStep)
+{
+	// Set up test cube array (comment out if using game)
+	testCubes();
+	
+	//g_currStep = currStep;
 	
 	// Retrieve <canvas> element
 	var canvas = document.getElementById('myWebGLCanvas');
@@ -112,26 +106,18 @@ function drawInit(currStep)
 	// Calculate the view projection matrix
 	VPMatrix = new Matrix4();
 	
-	// Register the event handler to be called on key press
+	// Register the event handler to be called on key press and key release
 	document.onkeydown = function(ev){ keyDown(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix); };
 	document.onkeyup = function(ev){ keyUp(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix); };
 	
-	g_gl = gl;
-	g_n = n;
-	g_VPMatrix = VPMatrix;
-	g_a_Position = a_Position;
-	g_u_MVPMatrix = u_MVPMatrix;
-	
-	draw(gl, n, VPMatrix, a_Position, u_MVPMatrix); // Draw
+	draw(); // First draw call
 }
 
 function getShader(gl, scriptId)
 {
 	// Retrieve shader by HTML ID
 	var shaderScript = document.getElementById(scriptId);
-    if (!shaderScript) {
-        console.log('*** Error: unknown script element ' + scriptId);
-    }
+    if (!shaderScript) { console.log('*** Error: unknown script element ' + scriptId); }
 	
 	// Set shader to appropriate source container
 	if (shaderScript.type == 'x-shader/x-vertex') { VSHADER_SOURCE = shaderScript.text; }
@@ -197,20 +183,20 @@ function initVertexBuffers(gl)
 }
 
 function initArrayBufferForLaterUse(gl, data, num, type){
-  var buffer = gl.createBuffer();   // Create a buffer object
-  if (!buffer) {
-    console.log('Failed to create the buffer object');
-    return null;
-  }
-  // Write date into the buffer object
-  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-  gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-
-  // Store the necessary information to assign the object to the attribute variable later
-  buffer.num = num;
-  buffer.type = type;
-
-  return buffer;
+	var buffer = gl.createBuffer();   // Create a buffer object
+	if (!buffer) {
+	console.log('Failed to create the buffer object');
+	return null;
+	}
+	// Write date into the buffer object
+	gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+	gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+	
+	// Store the necessary information to assign the object to the attribute variable later
+	buffer.num = num;
+	buffer.type = type;
+	
+	return buffer;
 }
 
 function initArrayBuffer(gl, attribute, data, num, type)
@@ -275,8 +261,18 @@ function draw(highResTimestamp) {
 	// Clear color and depth buffer
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 200.0);
+	if(controlSet[37]){ g_centerX -= g_moveSpeed; }	// The right arrow key was released
+	if(controlSet[38]){ g_centerY += g_moveSpeed; }	// The up arrow key was released
+	if(controlSet[39]){ g_centerX += g_moveSpeed; }	// The left arrow key was released
+	if(controlSet[40]){ g_centerY -= g_moveSpeed; }	// The down arrow key was released
+	if(controlSet[65]){ g_eyeX -= g_moveSpeed; g_centerX -= g_moveSpeed; }	// The A key was released
+	if(controlSet[68]){ g_eyeX += g_moveSpeed; g_centerX += g_moveSpeed;}	// The D key was released
+	if(controlSet[69]){ g_eyeY -= g_moveSpeed; }	// The E key was released
+	if(controlSet[81]){ g_eyeY += g_moveSpeed; }	// The Q key was released
+	if(controlSet[83]){ g_eyeZ -= g_moveSpeed; }	// The S key was released
+	if(controlSet[87]){ g_eyeZ += g_moveSpeed; }	// The W key was released
 	
+	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 200.0);
 	VPMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ, g_centerX, g_centerY, g_centerZ, 0.0, 1.0, 0.0);
 	
 	//Read the 3D Array
@@ -295,17 +291,6 @@ function draw(highResTimestamp) {
 		}
 	}
 	//console.timeEnd('fps');
-
-	if(controlSet[37]){ g_centerX -= g_moveSpeed; }	// The right arrow key was released
-	if(controlSet[38]){ g_centerY += g_moveSpeed; }	// The up arrow key was released
-	if(controlSet[39]){ g_centerX += g_moveSpeed; }	// The left arrow key was released
-	if(controlSet[40]){ g_centerY -= g_moveSpeed; }	// The down arrow key was released
-	if(controlSet[65]){ g_eyeX -= g_moveSpeed; g_centerX -= g_moveSpeed; }	// The A key was released
-	if(controlSet[68]){ g_eyeX += g_moveSpeed; g_centerX += g_moveSpeed;}	// The D key was released
-	if(controlSet[69]){ g_eyeY -= g_moveSpeed; }	// The E key was released
-	if(controlSet[81]){ g_eyeY += g_moveSpeed; }	// The Q key was released
-	if(controlSet[83]){ g_eyeZ -= g_moveSpeed; }	// The S key was released
-	if(controlSet[87]){ g_eyeZ += g_moveSpeed; }	// The W key was released
 
 	setEyePos(g_eyeX, g_eyeY, g_eyeZ);
 	setRefPos(g_centerX, g_centerY, g_centerZ);

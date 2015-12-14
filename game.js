@@ -44,7 +44,6 @@ function gameInit()
 		}
 	}
 	
-	//console.log(currChangeSet);
 	checkAllChangeSet = currChangeSet;
 		
 	currStep[2][2][3] = 1;
