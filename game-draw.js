@@ -11,7 +11,7 @@ var g_modelMatrix = new Matrix4(), g_mvpMatrix = new Matrix4();
 // Movement speed
 var g_moveSpeed = 0.5;
 // Eye coordinates
-var g_eyeX = 0.0, g_eyeY = 0.0, g_eyeZ = 70.00;
+var g_eyeX = 13.5, g_eyeY = 13.5, g_eyeZ = 13.5;
 // Reference coordinates
 var g_centerX = 0.0, g_centerY = 0.0, g_centerZ = 10.0;
 
@@ -25,15 +25,17 @@ var g_u_MVPMatrix = null;
 var isAlreadyUpdating = false;
 var isDrawing = false;
 
-//******************
 //KEYDOWN VARIABLES
-//******************
 var gl;
 var n;
 var VPMatrix;
 var a_Position;
 var u_MVPMatix;
 var controlSet = [];
+
+//CAMERA VARIABLES
+var degLR = 0;
+var degUD = -90;
 
 function drawInit(currStep)
 {
@@ -242,9 +244,9 @@ function initArrayBuffer(gl, attribute, data, num, type)
 //function keyDown(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix)
 function keyDown(ev)
 {
-	if(ev.keyCode == 37) { controlSet[37] = 1; } // The right arrow key was pressed
+	if(ev.keyCode == 37) { controlSet[37] = 1; } // The left arrow key was pressed
 	if(ev.keyCode == 38) { controlSet[38] = 1; } // The up arrow key was pressed
-	if(ev.keyCode == 39) { controlSet[39] = 1; } // The left arrow key was pressed
+	if(ev.keyCode == 39) { controlSet[39] = 1; } // The right arrow key was pressed
 	if(ev.keyCode == 40) { controlSet[40] = 1; } // The down arrow key was pressed
 	if(ev.keyCode == 65) { controlSet[65] = 1; } // The A key was pressed
 	if(ev.keyCode == 68) { controlSet[68] = 1; } // The D key was pressed
@@ -256,9 +258,9 @@ function keyDown(ev)
 
 function keyUp(ev)
 {
-	if(ev.keyCode == 37) { controlSet[37] = 0; } // The right arrow key was released
+	if(ev.keyCode == 37) { controlSet[37] = 0; } // The left arrow key was released
 	if(ev.keyCode == 38) { controlSet[38] = 0; } // The up arrow key was released
-	if(ev.keyCode == 39) { controlSet[39] = 0; } // The left arrow key was released
+	if(ev.keyCode == 39) { controlSet[39] = 0; } // The right arrow key was released
 	if(ev.keyCode == 40) { controlSet[40] = 0; } // The down arrow key was released
 	if(ev.keyCode == 65) { controlSet[65] = 0; } // The A key was released
 	if(ev.keyCode == 68) { controlSet[68] = 0; } // The D key was released
@@ -296,16 +298,37 @@ function draw(highResTimestamp) {
 	}
 	//console.timeEnd('fps');
 
-	if(controlSet[37]){ g_centerX -= g_moveSpeed; }	// The right arrow key was released
-	if(controlSet[38]){ g_centerY += g_moveSpeed; }	// The up arrow key was released
-	if(controlSet[39]){ g_centerX += g_moveSpeed; }	// The left arrow key was released
-	if(controlSet[40]){ g_centerY -= g_moveSpeed; }	// The down arrow key was released
-	if(controlSet[65]){ g_eyeX -= g_moveSpeed; g_centerX -= g_moveSpeed; }	// The A key was released
-	if(controlSet[68]){ g_eyeX += g_moveSpeed; g_centerX += g_moveSpeed;}	// The D key was released
+	if(controlSet[65]){ g_eyeX -= g_moveSpeed; }	// The A key was released
+	if(controlSet[68]){ g_eyeX += g_moveSpeed; }	// The D key was released
 	if(controlSet[69]){ g_eyeY -= g_moveSpeed; }	// The E key was released
 	if(controlSet[81]){ g_eyeY += g_moveSpeed; }	// The Q key was released
 	if(controlSet[83]){ g_eyeZ -= g_moveSpeed; }	// The S key was released
 	if(controlSet[87]){ g_eyeZ += g_moveSpeed; }	// The W key was released
+
+	// The left arrow key was released
+	if(controlSet[37]){
+		degLR -= 2;
+	}	
+	// The right arrow key was released
+	if(controlSet[39]){
+		degLR += 2;
+	}	
+	// The up arrow key was released
+	if(controlSet[38]){
+		if(degUD+2 <= -10){
+			degUD += 2;
+		}
+	}	
+	// The down arrow key was released
+	if(controlSet[40]){
+		if(degUD-2 >= -176){
+			degUD -= 2;
+		}
+	}	
+
+	g_centerX = g_eyeX + (10 * Math.cos(degLR*3.1416/180) * Math.sin(degUD*3.1416/180))
+	g_centerY = g_eyeY + (10 * Math.cos(degUD*3.1416/180))
+	g_centerZ = g_eyeZ + (10 * Math.sin(degLR*3.1416/180) * Math.sin(degUD*3.1416/180))
 
 	setEyePos(g_eyeX, g_eyeY, g_eyeZ);
 	setRefPos(g_centerX, g_centerY, g_centerZ);
