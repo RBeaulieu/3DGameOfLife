@@ -31,7 +31,6 @@ var n;
 var VPMatrix;
 var a_Position;
 var u_MVPMatix;
-var fps = 1;
 var controlSet = [];
 
 //CAMERA VARIABLES
