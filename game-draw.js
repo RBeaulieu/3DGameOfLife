@@ -277,6 +277,7 @@ function draw(highResTimestamp) {
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 200.0);
+	
 	VPMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ, g_centerX, g_centerY, g_centerZ, 0.0, 1.0, 0.0);
 	
 	//Read the 3D Array

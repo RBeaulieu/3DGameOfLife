@@ -67,7 +67,7 @@ function gameInit()
 
 function generateNextStep()
 {
-	console.log("------------ step " + step + " ------------");
+	console.log("------------ step " + step + "------------");
 	prevStep = currStep;
 	currStep = prevStep.map(function(outerArr) { return outerArr.map(function(innerArr) { return innerArr.slice(); }) });  // Makes deep copy of 3D array
 	prevChangeSet = currChangeSet;
@@ -106,7 +106,6 @@ function generateNextStep()
 				}
 			}
 		}
-		
 		
 		if(prevStep[z][y][x] != 0)
 		{
