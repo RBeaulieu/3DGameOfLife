@@ -273,17 +273,8 @@ function keyUp(ev)
 function draw(highResTimestamp) {
 	requestAnimationFrame(draw);
 
-<<<<<<< HEAD
-	//CHECK FPS
-	setTimeout(getFPS, 0);
-
-	// Clear color and depth buffer
-	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	
-	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 100.0);
-=======
 	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 200.0);
->>>>>>> refs/remotes/origin/master
+	
 	VPMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ, g_centerX, g_centerY, g_centerZ, 0.0, 1.0, 0.0);
 	
 	//Read the 3D Array
@@ -302,13 +293,6 @@ function draw(highResTimestamp) {
 		}
 	}
 
-<<<<<<< HEAD
-function getFPS(){
-	console.timeEnd('fps');
-	console.time('fps');
-}
-
-=======
 	if(controlSet[37]){ g_centerX -= g_moveSpeed; }	// The right arrow key was released
 	if(controlSet[38]){ g_centerY += g_moveSpeed; }	// The up arrow key was released
 	if(controlSet[39]){ g_centerX += g_moveSpeed; }	// The left arrow key was released
@@ -323,7 +307,6 @@ function getFPS(){
 	setEyePos(g_eyeX, g_eyeY, g_eyeZ);
 	setRefPos(g_centerX, g_centerY, g_centerZ);
 }
->>>>>>> refs/remotes/origin/master
 
 function drawCube(gl, n, buffer, VPMatrix, a_Position, u_MVPMatrix)
 {
