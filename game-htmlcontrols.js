@@ -15,29 +15,29 @@ function gameClear()
 
 function updateSpeed(newVal)
 {
-	document.getElementById("mySpeedLbl").innerHTML = newVal;
+	document.getElementById('mySpeedLbl').innerHTML = newVal;
 }
 
 function enableToL()
 {
-	document.getElementById("txtBVal").disabled = false;
-	document.getElementById("txtSVal").disabled = false;
+	document.getElementById('txtBVal').disabled = false;
+	document.getElementById('txtSVal').disabled = false;
 }
 
 function disableToL()
 {
-	document.getElementById("txtBVal").disabled = true;
-	document.getElementById("txtSVal").disabled = true;
+	document.getElementById('txtBVal').disabled = true;
+	document.getElementById('txtSVal').disabled = true;
 }
 
 function setStep(step)
 {
-	
+	document.getElementById('myStep').innerHTML = step;
 }
 
 function setPopulation(pop)
 {
-	
+	document.getElementById('myPop').innerHTML = pop;
 }
 
 function setEyePos(eyeX, eyeY, eyeZ)

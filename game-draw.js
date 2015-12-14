@@ -25,7 +25,7 @@ var g_u_MVPMatrix = null;
 var isAlreadyUpdating = false;
 var isDrawing = false;
 
-var size = 5;
+//var size = 20;
 
 //******************
 //KEYDOWN VARIABLES
@@ -35,9 +35,6 @@ var n
 var VPMatrix
 var a_Position
 var u_MVPMatrix
-
-var fpsTime = 0;
-
 
 function drawInit(currStep)
 {
@@ -54,7 +51,7 @@ function drawInit(currStep)
 			for(var x = 0; x < size; x ++)
 			{
 				
-				if(z == 0 || y == 0 || x == 4)
+				if(z == 0 || y == 0 || x == 0)
 				{
 					g_currStep[z][y][x] = 1;
 				}
@@ -264,13 +261,12 @@ function keyDown(ev)
 
 function draw(highResTimestamp) {
 	requestAnimationFrame(draw);
-
-	//CHECK FPS In Console
-	//setTimeout(getFPS, 0);
-
+	
+	//console.time('fps');
+	
 	// Clear color and depth buffer
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	
+
 	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 100.0);
 	VPMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ, g_centerX, g_centerY, g_centerZ, 0.0, 1.0, 0.0);
 	
@@ -289,14 +285,10 @@ function draw(highResTimestamp) {
 			}
 		}
 	}
+	
+	//console.timeEnd('fps');
+	
 }
-
-/*CHECK FPS
-function getFPS(){
-	console.timeEnd('fps');
-	console.time('fps');
-}
-*/
 
 function drawCube(gl, n, buffer, VPMatrix, a_Position, u_MVPMatrix)
 {
@@ -313,16 +305,4 @@ function drawCube(gl, n, buffer, VPMatrix, a_Position, u_MVPMatrix)
 	
 	// Draw
 	gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
-}
-
-function canDraw()
-{
-	return !isDrawing;
-}
-
-function drawNonCamUpdate(currStep)
-{
-	g_currStep = currStep;
-	isAlreadyUpdating = false;
-	draw(g_gl, g_n, g_VPMatrix, g_a_Position, g_u_MVPMatrix);
 }

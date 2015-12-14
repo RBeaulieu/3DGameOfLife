@@ -3,10 +3,10 @@
 var prevStep = [];
 var currStep = [];
 var prevChangeSet = {};
-var currChangeSet = {}
+var currChangeSet = {};
 var bSet = {};
 var sSet = {};
-var size = 5;
+var size = 25;
 var step = 0;
 
 //For demo day
@@ -77,6 +77,7 @@ function generateNextStep()
 		var count = 0;
 		var localNodes = [];
 		var localNodesCount = 0;
+		//var matches = str.match((\d+)\s(\d+)\s(\d+));
 		var x = parseInt(loc.charAt(0));
 		var y = parseInt(loc.charAt(1));
 		var z = parseInt(loc.charAt(2));
@@ -93,9 +94,11 @@ function generateNextStep()
 						{
 							if((x + i) > -1 && (x + i) < size) // Check to make sure we're not checking out of bounds
 							{
+								//
 								if(!(k == 0 && j == 0 && i == 0) && prevStep[z + k][y + j][x + i] != 0) { count++; }
-								//put location in localNodes
-								localNodes[localNodesCount] = (x + i).toString() + (y + j).toString() + (z + k).toString();
+								// Put valid neighbor in localNodes
+								localNodes[localNodesCount] = (x + i).toString() + " " + (y + j).toString() + " " + (z + k).toString();
+								// Increment count
 								localNodesCount++;
 							}
 						}
@@ -104,12 +107,9 @@ function generateNextStep()
 			}
 		}
 		
-		//console.log("point: " + loc);
-		//console.log("count: " + count);
 		
 		if(prevStep[z][y][x] != 0)
 		{
-			//console.log(localNodes);
 			if(sSet[count.toString()] === undefined)
 			{
 				currStep[z][y][x] = 0;
@@ -118,7 +118,6 @@ function generateNextStep()
 		}
 		else
 		{
-			//console.log(localNodes);
 			if(bSet[count.toString()] !== undefined)
 			{
 				currStep[z][y][x] = 1;
@@ -127,20 +126,6 @@ function generateNextStep()
 		}
 	}
 	
-	//console.log(currChangeSet);
 	step++;
-	timeout();
-}
-
-function timeout() {
-	setTimeout(function(){
-		if(canDraw())
-		{
-			drawNonCamUpdate(currStep);
-		}
-		else
-		{
-			timeout();
-		}
-	}, 20);
+	setTimeout(generateNextStep, 0);
 }
