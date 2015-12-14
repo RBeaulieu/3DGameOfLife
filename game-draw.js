@@ -53,12 +53,10 @@ function testCubes() {
 	
 }
 
-function drawInit(currStep)
+function drawInit()
 {
 	// Set up test cube array (comment out if using game)
 	testCubes();
-	
-	//g_currStep = currStep;
 	
 	// Retrieve <canvas> element
 	var canvas = document.getElementById('myWebGLCanvas');
@@ -109,8 +107,6 @@ function drawInit(currStep)
 	// Register the event handler to be called on key press and key release
 	document.onkeydown = function(ev){ keyDown(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix); };
 	document.onkeyup = function(ev){ keyUp(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix); };
-	
-	draw(); // First draw call
 }
 
 function getShader(gl, scriptId)

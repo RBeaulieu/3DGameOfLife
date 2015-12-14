@@ -7,24 +7,22 @@ var currChangeSet = {};
 var bSet = {};
 var sSet = {};
 var size = 20;
+var population = 0;
 var step = 0;
-
-//For demo day
-var checkAllChangeSet = {};
 
 function main()
 {
 	gameInit();
+	drawInit();
 	
-	//test();
-	
+	draw(); // First draw call
 	//generateNextStep();
-	
-	//console.log(currStep);
 }
 
 function gameInit()
 {
+	var checkAllChangeSet = {};
+	
 	for(var z = 0; z < size; z++)
 	{
 		prevStep[z] = [];
@@ -59,9 +57,6 @@ function gameInit()
 	sSet["5"] = true;
 	sSet["7"] = true;
 	sSet["9"] = true;
-
-	
-	drawInit(currStep);
 }
 
 function generateNextStep()
