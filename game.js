@@ -5,19 +5,11 @@ var currStep = [];
 var currChangeSet = {};
 var bSet = {};
 var sSet = {};
-<<<<<<< HEAD
 var size = 20;
 var bufferStep;
 var bufferLimit = 10;
 var myWorker;
 var isWorking;
-=======
-var size = 10;
-var step = 0;
-
-//For demo day
-var checkAllChangeSet = {};
->>>>>>> refs/remotes/origin/master
 
 function main()
 {

@@ -15,20 +15,6 @@ var g_eyeX = 13.5, g_eyeY = 13.5, g_eyeZ = 13.5;
 // Reference coordinates
 var g_centerX = 0.0, g_centerY = 0.0, g_centerZ = 10.0;
 
-<<<<<<< HEAD
-//******************
-=======
-//TEST GLOBAL VARS AND STUFF
-var g_gl = null;
-var g_n = null;
-var g_VPMatrix = null;
-var g_a_Position = null;
-var g_u_MVPMatrix = null;
-
-var isAlreadyUpdating = false;
-var isDrawing = false;
-
->>>>>>> refs/remotes/origin/master
 //KEYDOWN VARIABLES
 var gl;
 var n;
@@ -38,18 +24,12 @@ var u_MVPMatrix;
 var controlSet = [];
 var isStopped;
 
-<<<<<<< HEAD
-function testCubes() {
-=======
 //CAMERA VARIABLES
 var degLR = 0;
 var degUD = -90;
 
-function drawInit(currStep)
+function testCubes()
 {
-	g_currStep = currStep;
-	
->>>>>>> refs/remotes/origin/master
 	for(var z = 0; z < size; z++)
 	{
 		g_currStep[z] = [];
@@ -65,7 +45,6 @@ function drawInit(currStep)
 			}
 		}
 	}
-	
 }
 
 function drawInit()
@@ -272,19 +251,16 @@ function draw(highResTimestamp) {
 	// Clear color and depth buffer
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-	if(controlSet[37]){ g_centerX -= g_moveSpeed; }	// The right arrow key was released
-	if(controlSet[38]){ g_centerY += g_moveSpeed; }	// The up arrow key was released
-	if(controlSet[39]){ g_centerX += g_moveSpeed; }	// The left arrow key was released
-	if(controlSet[40]){ g_centerY -= g_moveSpeed; }	// The down arrow key was released
-	if(controlSet[65]){ g_eyeX -= g_moveSpeed; g_centerX -= g_moveSpeed; }	// The A key was released
-	if(controlSet[68]){ g_eyeX += g_moveSpeed; g_centerX += g_moveSpeed;}	// The D key was released
-	if(controlSet[69]){ g_eyeY -= g_moveSpeed; }	// The E key was released
-	if(controlSet[81]){ g_eyeY += g_moveSpeed; }	// The Q key was released
-	if(controlSet[83]){ g_eyeZ -= g_moveSpeed; }	// The S key was released
-	if(controlSet[87]){ g_eyeZ += g_moveSpeed; }	// The W key was released
-	
-	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 200.0);
-	VPMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ, g_centerX, g_centerY, g_centerZ, 0.0, 1.0, 0.0);
+	//if(controlSet[37]){ g_centerX -= g_moveSpeed; }	// The right arrow key was released
+	//if(controlSet[38]){ g_centerY += g_moveSpeed; }	// The up arrow key was released
+	//if(controlSet[39]){ g_centerX += g_moveSpeed; }	// The left arrow key was released
+	//if(controlSet[40]){ g_centerY -= g_moveSpeed; }	// The down arrow key was released
+	//if(controlSet[65]){ g_eyeX -= g_moveSpeed; g_centerX -= g_moveSpeed; }	// The A key was released
+	//if(controlSet[68]){ g_eyeX += g_moveSpeed; g_centerX += g_moveSpeed;}	// The D key was released
+	//if(controlSet[69]){ g_eyeY -= g_moveSpeed; }	// The E key was released
+	//if(controlSet[81]){ g_eyeY += g_moveSpeed; }	// The Q key was released
+	//if(controlSet[83]){ g_eyeZ -= g_moveSpeed; }	// The S key was released
+	//if(controlSet[87]){ g_eyeZ += g_moveSpeed; }	// The W key was released
 	
 	//Read the 3D Array
 	for(var z = 0; z < size; z++)
@@ -302,12 +278,6 @@ function draw(highResTimestamp) {
 	}
 	//console.timeEnd('fps');
 
-<<<<<<< HEAD
-	//setEyePos(g_eyeX, g_eyeY, g_eyeZ);
-	//setRefPos(g_centerX, g_centerY, g_centerZ);
-	
-	//updateGameState();
-=======
 	if(controlSet[65]){ g_eyeX -= g_moveSpeed; }	// The A key was released
 	if(controlSet[68]){ g_eyeX += g_moveSpeed; }	// The D key was released
 	if(controlSet[69]){ g_eyeY -= g_moveSpeed; }	// The E key was released
@@ -339,10 +309,14 @@ function draw(highResTimestamp) {
 	g_centerX = g_eyeX + (10 * Math.cos(degLR*3.1416/180) * Math.sin(degUD*3.1416/180))
 	g_centerY = g_eyeY + (10 * Math.cos(degUD*3.1416/180))
 	g_centerZ = g_eyeZ + (10 * Math.sin(degLR*3.1416/180) * Math.sin(degUD*3.1416/180))
+	
+	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 200.0);
+	VPMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ, g_centerX, g_centerY, g_centerZ, 0.0, 1.0, 0.0);
 
 	setEyePos(g_eyeX, g_eyeY, g_eyeZ);
 	setRefPos(g_centerX, g_centerY, g_centerZ);
->>>>>>> refs/remotes/origin/master
+	
+	//updateGameState();
 }
 
 function drawCube(x, y, z, gl, n, buffer, VPMatrix, a_Position, u_MVPMatrix)
