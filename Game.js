@@ -6,7 +6,7 @@ var prevChangeSet = {};
 var currChangeSet = {}
 var bSet = {};
 var sSet = {};
-var size = 5;
+var size = 20;
 var step = 0;
 
 //For demo day
@@ -74,6 +74,7 @@ function generateNextStep()
 	currChangeSet = {};
 	
 <<<<<<< HEAD
+<<<<<<< HEAD
 	for(var loc in checkAllChangeSet) {
 =======
 <<<<<<< HEAD
@@ -81,6 +82,9 @@ function generateNextStep()
 =======
 	for(var loc in checkAllChangeSet) {
 >>>>>>> refs/remotes/origin/Elliot
+>>>>>>> refs/remotes/origin/master
+=======
+	for(var loc in prevChangeSet) {
 >>>>>>> refs/remotes/origin/master
 		var count = 0;
 		var localNodes = [];
