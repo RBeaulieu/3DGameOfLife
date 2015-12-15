@@ -13,7 +13,7 @@ var g_moveSpeed = 0.5;
 // Look speed
 var g_lookSpeed = 2;
 // Eye coordinates
-var g_eyeX = 0.0, g_eyeY = 30.0, g_eyeZ = -41.5;
+var g_eyeX = 30.0, g_eyeY = 32.0, g_eyeZ = 60.0;
 // Reference coordinates
 var g_centerX = 0.0, g_centerY = 0.0, g_centerZ = 0.0;
 
@@ -29,7 +29,7 @@ var updateSpeed = 2000;
 var lastUpdate;
 
 // angle of the xz plane
-var degLR = 0;
+var degLR = 90;
 // angle of the yz plane
 var degUD = -90;
 
@@ -280,21 +280,21 @@ function draw(highResTimestamp) {
 		}
 	}
 
-	// The left arrow key was released
+	// The left
 	if(controlSet[37]){
 		degLR -= g_lookSpeed;
 	}	
-	// The right arrow key was released
+	// The right
 	if(controlSet[39]){
 		degLR += g_lookSpeed;
 	}	
-	// The up arrow key was released
+	// The up
 	if(controlSet[38]){
 		if(degUD + g_lookSpeed <= -10){
 			degUD += g_lookSpeed;
 		}
 	}	
-	// The down arrow key was released
+	// The downs
 	if(controlSet[40]){
 		if(degUD - g_lookSpeed >= -176){
 			degUD -= g_lookSpeed;
@@ -306,42 +306,38 @@ function draw(highResTimestamp) {
 	g_centerZ = g_eyeZ + (10 * Math.sin(degLR*3.1416/180) * Math.sin(degUD*3.1416/180))
 	
 	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 200.0);
-	VPMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ, g_centerX, g_centerY, g_centerZ, 0.0, 1.0, 0.0);
+	
+	VPMatrix.lookAt(g_eyeX, 	g_eyeY, 	g_eyeZ,
+					g_centerX, 	g_centerY, 	g_centerZ, 
+					0.0,		1.0,		0.0);
 
-	// The A key was released
+	// The A (left)
 	if(controlSet[65]){
 		g_eyeX -= Math.sin(degLR*3.1416/180) * g_moveSpeed;
 		g_eyeZ += Math.cos(degLR*3.1416/180) * g_moveSpeed;
 	}
-	// The D key was released
+	// The D (right)
 	if(controlSet[68]){
 		g_eyeX += Math.sin(degLR*3.1416/180) * g_moveSpeed;
 		g_eyeZ -= Math.cos(degLR*3.1416/180) * g_moveSpeed;
 	}
-
-
-
-	// The E key was released
+	// The E (up)
 	if(controlSet[69]){
-		g_eyeY -= Math.sin(degUD*3.1416/180) * g_moveSpeed;
-		g_eyeY += Math.sin(degUD*3.1416/180) * g_moveSpeed;
-		g_eyeZ += Math.sin(degUD*3.1416/180) * g_moveSpeed;
+		g_eyeY -= g_moveSpeed;
 	}
-	// The Q key was released
+	// The Q (down)
 	if(controlSet[81]){
-		g_eyeY += Math.sin(degUD*3.1416/180) * g_moveSpeed;
-		g_eyeY += Math.sin(degUD*3.1416/180) * g_moveSpeed;
-		g_eyeZ += Math.cos(degLR*3.1416/180) * g_moveSpeed;
+		g_eyeY += g_moveSpeed;
 	}
-
-
-	// The S key was released
-	if(controlSet[83]){
-		g_eyeZ += Math.sin(degLR*3.1416/180) * g_moveSpeed;
-	}
-	// The W key was released
+	// The W (forward)
 	if(controlSet[87]){
-		g_eyeZ -= Math.sin(degLR*3.1416/180) * g_moveSpeed;
+		g_eyeX -= Math.sin((90+degLR)*3.1416/180) * g_moveSpeed;
+		g_eyeZ += Math.cos((90+degLR)*3.1416/180) * g_moveSpeed;
+	}
+	// The S (back)
+	if(controlSet[83]){
+		g_eyeX += Math.sin((90+degLR)*3.1416/180) * g_moveSpeed;
+		g_eyeZ -= Math.cos((90+degLR)*3.1416/180) * g_moveSpeed;
 	}
 
 	g_centerX = g_eyeX + (10 * Math.cos(degLR*3.1416/180) * Math.sin(degUD*3.1416/180))
