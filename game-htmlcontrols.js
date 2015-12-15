@@ -13,9 +13,9 @@ function gameClear()
 	gameStop();
 }
 
-function updateSpeed(newVal)
+function setSpeed(newVal)
 {
-	document.getElementById('mySpeedLbl').innerHTML = newVal;
+	document.getElementById('mySpeed').innerHTML = newVal;
 }
 
 function enableToL()

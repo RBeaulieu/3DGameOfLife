@@ -21,7 +21,6 @@
 		<script src="lib/cuon-utils.js"></script>
 		<script src="lib/cuon-matrix.js"></script>
 		<script src="game-draw.js"></script>
-		<script src="game-utils.js"></script>
 		<script src="game-htmlcontrols.js"></script>
 		<script src="game.js"></script>
 		<script id="shader-vs" type="x-shader/x-vertex">
@@ -61,7 +60,7 @@
 					<button type="btnStop" onclick="gameStop()">Stop</button>
 					<button type="btnClear" onclick="gameClear()">Clear</button>
 				</td>
-				<td id="mySpeedRange" style="text-align:right;">Speed: <input type="range" min="1" max="100" value="1" style="vertical-align:middle;" oninput="updateSpeed(this.value)"><td>
+				<td id="mySpeedRange" style="text-align:right;">Speed: <input type="range" min="1" max="100" value="1" style="vertical-align:middle;" oninput="setSpeed(this.value)"><td>
 				<td id="mySpeed" style="text-align:left;">1<td>
 				<td id="myStepTitle" style="text-align:right;">Current Step:</td>
 				<td id="myStep" style="text-align:right;width:60px;"></td>
