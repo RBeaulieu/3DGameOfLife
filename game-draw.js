@@ -7,40 +7,31 @@ var g_currStep = [];
 // Cube buffer that stores the vertices for the cube
 var g_cubeBuffer = null;
 // Coordinate transformation matrix
-var g_modelMatrix = new Matrix4(), g_mvpMatrix = new Matrix4();
+var g_mvpMatrix = new Matrix4();
 // Movement speed
 var g_moveSpeed = 0.5;
 // Eye coordinates
-var g_eyeX = 13.5, g_eyeY = 13.5, g_eyeZ = 13.5;
+var g_eyeX = 0.0, g_eyeY = 30.0, g_eyeZ = -41.5;
 // Reference coordinates
-var g_centerX = 0.0, g_centerY = 0.0, g_centerZ = 10.0;
-
-//TEST GLOBAL VARS AND STUFF
-var g_gl = null;
-var g_n = null;
-var g_VPMatrix = null;
-var g_a_Position = null;
-var g_u_MVPMatrix = null;
-
-var isAlreadyUpdating = false;
-var isDrawing = false;
+var g_centerX = 0.0, g_centerY = 0.0, g_centerZ = 0.0;
 
 //KEYDOWN VARIABLES
 var gl;
 var n;
 var VPMatrix;
 var a_Position;
-var u_MVPMatix;
+var u_MVPMatrix;
 var controlSet = [];
+var isStopped;
+var updateSpeed = 2000;
+var lastUpdate;
 
 //CAMERA VARIABLES
-var degLR = 0;
-var degUD = -90;
+var degLR = -110;
+var degUD = -94;
 
-function drawInit(currStep)
+function testCubes()
 {
-	g_currStep = currStep;
-	
 	for(var z = 0; z < size; z++)
 	{
 		g_currStep[z] = [];
@@ -51,22 +42,19 @@ function drawInit(currStep)
 			
 			for(var x = 0; x < size; x ++)
 			{
-				if(z >= 0 || y >= 0 || x >= 0)
-				{
-					g_currStep[z][y][x] = 1;
-				}
-				
-				else
-				{
-					g_currStep[z][y][x] = 0;
-				}
-				
-				//g_currStep[z][y][x] = 0;
+				if(z == 0 || y == 0 || x == 0) { g_currStep[z][y][x] = 1; }
+				else { g_currStep[z][y][x] = 0; }
 			}
 		}
 	}
-	
-	//console.log(g_currStep);
+}
+
+function drawInit()
+{
+	// Set up test cube array (comment out if using game)
+	//testCubes();
+	g_currStep = lifeBuffer[0].arr;
+	lastUpdate = 0;
 	
 	// Retrieve <canvas> element
 	var canvas = document.getElementById('myWebGLCanvas');
@@ -114,26 +102,16 @@ function drawInit(currStep)
 	// Calculate the view projection matrix
 	VPMatrix = new Matrix4();
 	
-	// Register the event handler to be called on key press
+	// Register the event handler to be called on key press and key release
 	document.onkeydown = function(ev){ keyDown(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix); };
 	document.onkeyup = function(ev){ keyUp(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix); };
-	
-	g_gl = gl;
-	g_n = n;
-	g_VPMatrix = VPMatrix;
-	g_a_Position = a_Position;
-	g_u_MVPMatrix = u_MVPMatrix;
-	
-	draw(gl, n, VPMatrix, a_Position, u_MVPMatrix); // Draw
 }
 
 function getShader(gl, scriptId)
 {
 	// Retrieve shader by HTML ID
 	var shaderScript = document.getElementById(scriptId);
-    if (!shaderScript) {
-        console.log('*** Error: unknown script element ' + scriptId);
-    }
+    if (!shaderScript) { console.log('*** Error: unknown script element ' + scriptId); }
 	
 	// Set shader to appropriate source container
 	if (shaderScript.type == 'x-shader/x-vertex') { VSHADER_SOURCE = shaderScript.text; }
@@ -199,20 +177,20 @@ function initVertexBuffers(gl)
 }
 
 function initArrayBufferForLaterUse(gl, data, num, type){
-  var buffer = gl.createBuffer();   // Create a buffer object
-  if (!buffer) {
-    console.log('Failed to create the buffer object');
-    return null;
-  }
-  // Write date into the buffer object
-  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-  gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-
-  // Store the necessary information to assign the object to the attribute variable later
-  buffer.num = num;
-  buffer.type = type;
-
-  return buffer;
+	var buffer = gl.createBuffer();   // Create a buffer object
+	if (!buffer) {
+	console.log('Failed to create the buffer object');
+	return null;
+	}
+	// Write date into the buffer object
+	gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+	gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+	
+	// Store the necessary information to assign the object to the attribute variable later
+	buffer.num = num;
+	buffer.type = type;
+	
+	return buffer;
 }
 
 function initArrayBuffer(gl, attribute, data, num, type)
@@ -276,10 +254,6 @@ function draw(highResTimestamp) {
 	
 	// Clear color and depth buffer
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 200.0);
-	
-	VPMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ, g_centerX, g_centerY, g_centerZ, 0.0, 1.0, 0.0);
 	
 	//Read the 3D Array
 	for(var z = 0; z < size; z++)
@@ -290,8 +264,7 @@ function draw(highResTimestamp) {
 			{
 				if(g_currStep[z][y][x] == 1)
 				{
-					g_modelMatrix.setTranslate(x * 3, y * 3, z * 3);
-					drawCube(gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
+					drawCube(x, y, z, gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
 				}
 			}
 		}
@@ -329,12 +302,22 @@ function draw(highResTimestamp) {
 	g_centerX = g_eyeX + (10 * Math.cos(degLR*3.1416/180) * Math.sin(degUD*3.1416/180))
 	g_centerY = g_eyeY + (10 * Math.cos(degUD*3.1416/180))
 	g_centerZ = g_eyeZ + (10 * Math.sin(degLR*3.1416/180) * Math.sin(degUD*3.1416/180))
+	
+	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 200.0);
+	VPMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ, g_centerX, g_centerY, g_centerZ, 0.0, 1.0, 0.0);
 
+	setStep(degLR);
+	setPopulation(degUD);
 	setEyePos(g_eyeX, g_eyeY, g_eyeZ);
 	setRefPos(g_centerX, g_centerY, g_centerZ);
+	
+	if(highResTimestamp - lastUpdate > updateSpeed) {
+		g_currStep = getGameStep();
+		lastUpdate = highResTimestamp;
+	}
 }
 
-function drawCube(gl, n, buffer, VPMatrix, a_Position, u_MVPMatrix)
+function drawCube(x, y, z, gl, n, buffer, VPMatrix, a_Position, u_MVPMatrix)
 {
 	gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 	// Assign the buffer object to the attribute variable
@@ -344,7 +327,7 @@ function drawCube(gl, n, buffer, VPMatrix, a_Position, u_MVPMatrix)
 	
 	// Calculate the model view project matrix and pass it to u_MVPMatrix
 	g_mvpMatrix.set(VPMatrix);
-	g_mvpMatrix.multiply(g_modelMatrix);
+	g_mvpMatrix.translate(x * 3, y * 3, z * 3);
 	gl.uniformMatrix4fv(u_MVPMatrix, false, g_mvpMatrix.elements);
 	
 	// Draw
