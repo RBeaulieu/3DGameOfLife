@@ -1,21 +1,25 @@
 "use strict";
 
-var lifeBuffer = [];
-var currStep = [];
-var currChangeSet = {};
+var lifeBuffer;
+var nextWrite;
+var nextRead;
+var bufferLimit = 10;
+
 var bSet = {};
 var sSet = {};
 var size = 20;
-var bufferStep;
-var bufferLimit = 10;
 var myWorker;
 var isWorking;
+var testBuffer;
 
 function main()
-{
+{	
 	myWorker = new Worker('game-worker.js');
 	myWorker.onmessage = function(event) {
-		bufferStep++;
+		
+		lifeBuffer[nextWrite] = {arr: JSON.parse(event.data[0]), chng: JSON.parse(event.data[1])}
+		nextWrite++;
+		nextWrite = nextWrite % bufferLimit;
 		isWorking = false;
 	}
 	
@@ -28,48 +32,66 @@ function main()
 
 function gameInit()
 {
+	lifeBuffer = [];
+	nextWrite = 0;
+	nextRead = 0;
 	isWorking = false;
 	
+	var setup = [];
 	var checkAllChangeSet = {};
 	
 	for(var z = 0; z < size; z++)
 	{
-		currStep[z] = [];
+		setup[z] = [];
 		
 		for(var y = 0; y < size; y++)
 		{
-			currStep[z][y] = [];
+			setup[z][y] = [];
 			
 			for(var x = 0; x < size; x ++)
 			{
-				currStep[z][y][x] = 1;
-				currChangeSet[x.toString() + ' ' + y.toString() + ' ' + z.toString()] = true;
+				setup[z][y][x] = 0;
+				checkAllChangeSet[x.toString() + ' ' + y.toString() + ' ' + z.toString()] = true;
 			}
 		}
 	}
-	
-	checkAllChangeSet = currChangeSet;
 		
-	currStep[10][10][11] = 1;
-	currStep[10][10][9] = 1;
-	currStep[10][11][10] = 1;
-	currStep[10][9][10] = 1;
-	currStep[10][10][10] = 1;
-
-	bSet["1"] = true;
-	bSet["2"] = true;
+	setup[10][10][11] = 1;
+	setup[10][10][9] = 1;
+	setup[10][11][10] = 1;
+	setup[10][9][10] = 1;
+	setup[10][10][10] = 1;
+	
+	lifeBuffer[0] = {arr: setup, chng: checkAllChangeSet}
+	nextWrite++;
+	
+	//bSet["1"] = true;
+	//bSet["2"] = true;
 	bSet["3"] = true;
-	sSet["5"] = true;
-	sSet["7"] = true;
-	sSet["9"] = true;
+	//sSet["5"] = true;
+	//sSet["7"] = true;
+	sSet["2"] = true;
+	sSet["3"] = true;
 }
 
 function generateNextStep()
 {
-	if(!isWorking)
+	if(!isWorking && nextWrite != nextRead)
 	{
-		myWorker.postMessage([JSON.stringify(currStep), JSON.stringify(currChangeSet), JSON.stringify(bSet), JSON.stringify(sSet), size]);
+		var prevWrite;
+		if(nextWrite == 0) { prevWrite = bufferLimit - 1; }
+		else { prevWrite = nextWrite - 1;}
+		
+		myWorker.postMessage([JSON.stringify(lifeBuffer[prevWrite].arr), JSON.stringify(lifeBuffer[prevWrite].chng), JSON.stringify(bSet), JSON.stringify(sSet), size]);
 		isWorking = true;
 	}
 	setTimeout(generateNextStep, 100);
+}
+
+function getGameStep()
+{
+	var temp = lifeBuffer[nextRead].arr;
+	nextRead++;
+	nextRead = nextRead % bufferLimit;
+	return temp;
 }

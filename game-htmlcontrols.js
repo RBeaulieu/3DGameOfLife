@@ -13,7 +13,7 @@ function gameClear()
 	gameStop();
 }
 
-function updateSpeed(newVal)
+function setSpeed(newVal)
 {
 	document.getElementById('mySpeed').innerHTML = newVal;
 }

@@ -11,9 +11,9 @@ var g_mvpMatrix = new Matrix4();
 // Movement speed
 var g_moveSpeed = 0.5;
 // Eye coordinates
-var g_eyeX = 13.5, g_eyeY = 13.5, g_eyeZ = 13.5;
+var g_eyeX = 0.0, g_eyeY = 30.0, g_eyeZ = -41.5;
 // Reference coordinates
-var g_centerX = 0.0, g_centerY = 0.0, g_centerZ = 10.0;
+var g_centerX = 0.0, g_centerY = 0.0, g_centerZ = 0.0;
 
 //KEYDOWN VARIABLES
 var gl;
@@ -23,10 +23,12 @@ var a_Position;
 var u_MVPMatrix;
 var controlSet = [];
 var isStopped;
+var updateSpeed = 2000;
+var lastUpdate;
 
 //CAMERA VARIABLES
-var degLR = 0;
-var degUD = -90;
+var degLR = -110;
+var degUD = -94;
 
 function testCubes()
 {
@@ -50,7 +52,9 @@ function testCubes()
 function drawInit()
 {
 	// Set up test cube array (comment out if using game)
-	testCubes();
+	//testCubes();
+	g_currStep = lifeBuffer[0].arr;
+	lastUpdate = 0;
 	
 	// Retrieve <canvas> element
 	var canvas = document.getElementById('myWebGLCanvas');
@@ -250,17 +254,6 @@ function draw(highResTimestamp) {
 	
 	// Clear color and depth buffer
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-	//if(controlSet[37]){ g_centerX -= g_moveSpeed; }	// The right arrow key was released
-	//if(controlSet[38]){ g_centerY += g_moveSpeed; }	// The up arrow key was released
-	//if(controlSet[39]){ g_centerX += g_moveSpeed; }	// The left arrow key was released
-	//if(controlSet[40]){ g_centerY -= g_moveSpeed; }	// The down arrow key was released
-	//if(controlSet[65]){ g_eyeX -= g_moveSpeed; g_centerX -= g_moveSpeed; }	// The A key was released
-	//if(controlSet[68]){ g_eyeX += g_moveSpeed; g_centerX += g_moveSpeed;}	// The D key was released
-	//if(controlSet[69]){ g_eyeY -= g_moveSpeed; }	// The E key was released
-	//if(controlSet[81]){ g_eyeY += g_moveSpeed; }	// The Q key was released
-	//if(controlSet[83]){ g_eyeZ -= g_moveSpeed; }	// The S key was released
-	//if(controlSet[87]){ g_eyeZ += g_moveSpeed; }	// The W key was released
 	
 	//Read the 3D Array
 	for(var z = 0; z < size; z++)
@@ -313,10 +306,15 @@ function draw(highResTimestamp) {
 	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 200.0);
 	VPMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ, g_centerX, g_centerY, g_centerZ, 0.0, 1.0, 0.0);
 
+	setStep(degLR);
+	setPopulation(degUD);
 	setEyePos(g_eyeX, g_eyeY, g_eyeZ);
 	setRefPos(g_centerX, g_centerY, g_centerZ);
 	
-	//updateGameState();
+	if(highResTimestamp - lastUpdate > updateSpeed) {
+		g_currStep = getGameStep();
+		lastUpdate = highResTimestamp;
+	}
 }
 
 function drawCube(x, y, z, gl, n, buffer, VPMatrix, a_Position, u_MVPMatrix)
@@ -334,12 +332,4 @@ function drawCube(x, y, z, gl, n, buffer, VPMatrix, a_Position, u_MVPMatrix)
 	
 	// Draw
 	gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
-}
-
-function updateGameState()
-{
-	//if(!isStopped)
-	//{
-		//console.log("------------ step " + step + " ------------");
-	//}
 }
