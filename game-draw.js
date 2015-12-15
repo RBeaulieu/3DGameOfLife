@@ -254,27 +254,9 @@ function keyUp(ev)
 
 function draw(highResTimestamp) {
 	requestAnimationFrame(draw);
-	console.time('fps');
 	
 	// Clear color and depth buffer
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	
-	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 200.0);
-	
-	//Read the 3D Array
-	for(var z = 0; z < size; z++)
-	{
-		for(var y = 0; y < size; y++)
-		{
-			for(var x = 0; x < size; x ++)
-			{
-				if(g_currStep[z][y][x] == 1)
-				{
-					drawCube(x, y, z, gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
-				}
-			}
-		}
-	}
 
 	// The left
 	if(controlSet[37]){
@@ -334,9 +316,23 @@ function draw(highResTimestamp) {
 	g_centerY = g_eyeY + (10 * Math.cos(degUD*3.1416/180))
 	g_centerZ = g_eyeZ + (10 * Math.sin(degLR*3.1416/180) * Math.sin(degUD*3.1416/180))
 	
-	VPMatrix.lookAt(g_eyeX, 	g_eyeY, 	g_eyeZ,
-					g_centerX, 	g_centerY, 	g_centerZ, 
-					0.0,		1.0,		0.0);
+	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 200.0);
+	VPMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ,	g_centerX, 	g_centerY, 	g_centerZ, 0.0, 1.0, 0.0);
+	
+	//Read the 3D Array
+	for(var z = 0; z < size; z++)
+	{
+		for(var y = 0; y < size; y++)
+		{
+			for(var x = 0; x < size; x ++)
+			{
+				if(g_currStep[z][y][x] == 1)
+				{
+					drawCube(x, y, z, gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
+				}
+			}
+		}
+	}
 
 	setStep(degLR);
 	setPopulation(degUD);
