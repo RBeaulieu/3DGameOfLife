@@ -66,12 +66,10 @@ function gameInit()
 	nextWrite++;
 	
 	//bSet["1"] = true;
-	//bSet["2"] = true;
-	bSet["3"] = true;
-	//sSet["5"] = true;
-	//sSet["7"] = true;
-	sSet["2"] = true;
-	sSet["3"] = true;
+	bSet["4"] = true;
+	bSet["5"] = true;
+	sSet["0"] = true;
+	sSet["9"] = true;
 }
 
 function generateNextStep()
