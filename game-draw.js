@@ -261,22 +261,22 @@ function draw(highResTimestamp) {
 
 	// The left
 	if(controlSet[37]){
-		yaw -= g_lookSpeed/1.6;
+		yaw -= g_lookSpeed;
 	}	
 	// The right
 	if(controlSet[39]){
-		yaw += g_lookSpeed/1.6;
+		yaw += g_lookSpeed;
 	}	
 	// The up
 	if(controlSet[38]){
-		if(pitch + g_lookSpeed/2 <= -10){
-			pitch += g_lookSpeed/2;
+		if(pitch + g_lookSpeed <= -10){
+			pitch += g_lookSpeed;
 		}
 	}	
 	// The downs
 	if(controlSet[40]){
-		if(pitch - g_lookSpeed/2 >= -176){
-			pitch -= g_lookSpeed/2;
+		if(pitch - g_lookSpeed >= -176){
+			pitch -= g_lookSpeed;
 		}
 	}	
 
@@ -304,13 +304,15 @@ function draw(highResTimestamp) {
 	}
 	// The W (forward)
 	if(controlSet[87]){
-		g_eyeX -= Math.sin((90+yaw)*p180) * g_moveSpeed;
-		g_eyeZ += Math.cos((90+yaw)*p180) * g_moveSpeed;
+		g_eyeX += g_moveSpeed * Math.cos(yaw*p180) * Math.sin(pitch*p180)
+		g_eyeY += g_moveSpeed * Math.cos(pitch*p180)
+		g_eyeZ += g_moveSpeed * Math.sin(yaw*p180) * Math.sin(pitch*p180)
 	}
 	// The S (back)
 	if(controlSet[83]){
-		g_eyeX += Math.sin((90+yaw)*p180) * g_moveSpeed;
-		g_eyeZ -= Math.cos((90+yaw)*p180) * g_moveSpeed;
+		g_eyeX -= g_moveSpeed * Math.cos(yaw*p180) * Math.sin(pitch*p180)
+		g_eyeY -= g_moveSpeed * Math.cos(pitch*p180)
+		g_eyeZ -= g_moveSpeed * Math.sin(yaw*p180) * Math.sin(pitch*p180)
 	}
 
 	g_centerX = g_eyeX + (10 * Math.cos(yaw*p180) * Math.sin(pitch*p180))
