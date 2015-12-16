@@ -32,18 +32,18 @@ var g_moveSpeed = 0.5;
 // Look speed
 var g_lookSpeed = 2;
 // Eye coordinates
-var g_eyeX = 30.0, g_eyeY = 32.0, g_eyeZ = 60.0;
+var g_eyeX = 30.0, g_eyeY = 31.5, g_eyeZ = 60.0;
 // Reference coordinates
 var g_centerX = 0.0, g_centerY = 0.0, g_centerZ = 0.0;
 // Control set
 var g_controlSet = [];
 
 // angle of the xz plane
-var yaw = 90;
+var g_yaw = 90;
 // angle of the yz plane
-var pitch = -90;
+var g_pitch = -90;
 // for multiplication, turning degrees into radians
-var p180 = Math.PI/180
+var g_pi180 = Math.PI/180
 
 function testCubes()
 {
@@ -98,7 +98,7 @@ function drawInit()
 	}
 	
 	// Specify the color for clearing <canvas>
-	g_webGL.clearColor(0.0, 0.0, 0.0, 1.0);
+	g_webGL.clearColor(23.0/255.0, 27.0/255.0, 31.0/255.0, 1.0);
 	// Enable depth testing
 	g_webGL.enable(g_webGL.DEPTH_TEST);
 	// Turn on face culling
@@ -268,38 +268,38 @@ function draw(highResTimestamp) {
 
 	// The left
 	if(g_controlSet[37]){
-		yaw -= g_lookSpeed;
+		g_yaw -= g_lookSpeed;
 	}	
 	// The right
 	if(g_controlSet[39]){
-		yaw += g_lookSpeed;
+		g_yaw += g_lookSpeed;
 	}	
 	// The up
 	if(g_controlSet[38]){
-		if(pitch + g_lookSpeed <= -10){
-			pitch += g_lookSpeed;
+		if(g_pitch + g_lookSpeed <= -10){
+			g_pitch += g_lookSpeed;
 		}
 	}	
 	// The downs
 	if(g_controlSet[40]){
-		if(pitch - g_lookSpeed >= -176){
-			pitch -= g_lookSpeed;
+		if(g_pitch - g_lookSpeed >= -176){
+			g_pitch -= g_lookSpeed;
 		}
 	}	
 
-	g_centerX = g_eyeX + (10 * Math.cos(yaw*p180) * Math.sin(pitch*p180))
-	g_centerY = g_eyeY + (10 * Math.cos(pitch*p180))
-	g_centerZ = g_eyeZ + (10 * Math.sin(yaw*p180) * Math.sin(pitch*p180))
+	g_centerX = g_eyeX + (10 * Math.cos(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180))
+	g_centerY = g_eyeY + (10 * Math.cos(g_pitch*g_pi180))
+	g_centerZ = g_eyeZ + (10 * Math.sin(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180))
 
 	// The A (left)
 	if(g_controlSet[65]){
-		g_eyeX -= Math.sin(yaw*p180) * g_moveSpeed;
-		g_eyeZ += Math.cos(yaw*p180) * g_moveSpeed;
+		g_eyeX -= Math.sin(g_yaw*g_pi180) * g_moveSpeed;
+		g_eyeZ += Math.cos(g_yaw*g_pi180) * g_moveSpeed;
 	}
 	// The D (right)
 	if(g_controlSet[68]){
-		g_eyeX += Math.sin(yaw*p180) * g_moveSpeed;
-		g_eyeZ -= Math.cos(yaw*p180) * g_moveSpeed;
+		g_eyeX += Math.sin(g_yaw*g_pi180) * g_moveSpeed;
+		g_eyeZ -= Math.cos(g_yaw*g_pi180) * g_moveSpeed;
 	}
 	// The E (up)
 	if(g_controlSet[69]){
@@ -311,22 +311,22 @@ function draw(highResTimestamp) {
 	}
 	// The W (forward)
 	if(g_controlSet[87]){
-		g_eyeX += g_moveSpeed * Math.cos(yaw*p180) * Math.sin(pitch*p180)
-		g_eyeY += g_moveSpeed * Math.cos(pitch*p180)
-		g_eyeZ += g_moveSpeed * Math.sin(yaw*p180) * Math.sin(pitch*p180)
+		g_eyeX += g_moveSpeed * Math.cos(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180)
+		g_eyeY += g_moveSpeed * Math.cos(g_pitch*g_pi180)
+		g_eyeZ += g_moveSpeed * Math.sin(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180)
 	}
 	// The S (back)
 	if(g_controlSet[83]){
-		g_eyeX -= g_moveSpeed * Math.cos(yaw*p180) * Math.sin(pitch*p180)
-		g_eyeY -= g_moveSpeed * Math.cos(pitch*p180)
-		g_eyeZ -= g_moveSpeed * Math.sin(yaw*p180) * Math.sin(pitch*p180)
+		g_eyeX -= g_moveSpeed * Math.cos(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180)
+		g_eyeY -= g_moveSpeed * Math.cos(g_pitch*g_pi180)
+		g_eyeZ -= g_moveSpeed * Math.sin(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180)
 	}
 
-	g_centerX = g_eyeX + (10 * Math.cos(yaw*p180) * Math.sin(pitch*p180))
-	g_centerY = g_eyeY + (10 * Math.cos(pitch*p180))
-	g_centerZ = g_eyeZ + (10 * Math.sin(yaw*p180) * Math.sin(pitch*p180))
+	g_centerX = g_eyeX + (10 * Math.cos(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180))
+	g_centerY = g_eyeY + (10 * Math.cos(g_pitch*g_pi180))
+	g_centerZ = g_eyeZ + (10 * Math.sin(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180))
 	
-	g_vpMatrix.setPerspective(60.0, g_canvas.width / g_canvas.height, 1.0, 200.0);
+	g_vpMatrix.setPerspective(70.0, g_canvas.width / g_canvas.height, 1.0, 200.0);
 	g_vpMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ,	g_centerX, 	g_centerY, 	g_centerZ, 0.0, 1.0, 0.0);
 	
 	//Read the 3D Array
@@ -344,11 +344,9 @@ function draw(highResTimestamp) {
 		}
 	}
 
-	setStep(yaw);
-	setPopulation(pitch);
 	setEyePos(g_eyeX, g_eyeY, g_eyeZ);
 	setRefPos(g_centerX, g_centerY, g_centerZ);
-	
+
 	if(highResTimestamp - g_lastUpdate > g_updateSpeed) {
 		g_currStep = getGameStep();
 		g_lastUpdate = highResTimestamp;
