@@ -1,4 +1,16 @@
 <!DOCTYPE html>
+
+<!-- COLOR PALETTE
+Primary
+	DARK	#171b1f
+	MEDIUM	#1c2126
+	LIGHT	#39424d
+Secondary
+	OUTLINE	#14171b
+	ACCENT	#15202b
+	GREY	#808080
+ -->
+
 <html>
 	
 	<head>
@@ -7,13 +19,13 @@
 		<style type="text/css">
 			<!-- -->
 	      html{
-	      	background-color: #333;
+	      	background-color: #39424d;
 	      }
 	      body{
-			background-color: #000;
 	        font-family: "Courier New", "lucida console";
 	        font-weight: bold;
 	       	color: #FFF;
+	       	padding:0;
 	      	padding-left: 70%;
 	        position: fixed;
 	      	width: 30%;
@@ -21,14 +33,39 @@
 		    top: 0;
 	      }
 	      canvas{
-	        width: 70%;
+	      	padding:0.5%;
+	        width: 69%;
 	        height: auto;
-	        overflow: hidden;
-	        padding-bottom: 30%;
 	        position: fixed;
 	        left: 0;
 	        top: 0;
+	        bottom: 0;
+	        margin: auto;
 	      }
+	      pageBorder{
+			background-color: #171b1f;
+			z-index: -1;
+	      	padding:0;
+	        width: 30%;
+	        height: 100%;
+	        position: fixed;
+	        right: 0;
+	        top: 0;
+	      }
+		  hr{
+			border: 0;
+			border-top: 3px solid #39424d;
+			display: block;
+			margin: 10px 0px 10px 0px;
+			width: 100%;
+		  }
+		  hr2{
+			border: 0;
+			border-top: 1px solid #39424d;
+			display: block;
+			margin: 10px 0px 5px 0px;
+			width: 100%;
+		  }
 		</style>
 		<script src="lib/webgl-utils.js"></script>
 		<script src="lib/webgl-debug.js"></script>
@@ -61,30 +98,34 @@
     	</script>
 	</head>
 	<header id="myHeader">
-		<h1 id="myh1">3D Conway's Game of Life</h1>
-		<h5 id="myh5">By: Raphael Beaulieu and Elliot Coy</h5>
+		<h2 id="myh1">3D Game of Life</h2>
+		<h5 id="myh5">Created By...<br /><br />Raphael Beaulieu<br />Elliot Coy</h5>
 	</header>
 
 	<canvas id="myWebGLCanvas" width="900" height="600">Your browser does not support the canvas tag.</canvas>
-	
-	<body onload="main()">
+	<pageBorder width="300" height="600"></pageBorder>
 
-		
-		
-		<table id="myPlayTable" style="width:600px;">
+	<body onload="main()" width="350" height="600">
+
+		<hr></hr>
+
+		<table id="myPlayTable" style="width:350px; padding:0px;">
 			<tr>
 				<td id="myButtons">
-					<button type="btnStart" onclick="gameStart()">Start</button>
-					<button type="btnStop" onclick="gameStop()">Stop</button>
-					<button type="btnClear" onclick="gameClear()">Clear</button>
+					<tr><button type="btnStart" style="color" onclick="gameStart()">Start</button></tr>
+					<tr><button type="btnStop" style="color" onclick="gameStop()">Stop</button></tr>
+					<tr><button type="btnClear" style="color" onclick="gameClear()">Clear</button></tr>
 				</td>
-				<td id="mySpeedRange" style="text-align:right;">Speed: <input type="range" min="1" max="100" value="1" style="vertical-align:middle;" oninput="setSpeed(this.value)"><td>
-				<td id="mySpeed" style="text-align:left;">1<td>
-				<td id="myStepTitle" style="text-align:right;">Current Step:</td>
-				<td id="myStep" style="text-align:right;width:60px;"></td>
+			</tr>
+			<hr2></hr2>
+			<tr>
+				<td id="mySpeedRange" style="text-align:left;">Speed: <td id="mySpeed" style="text-align:left;">1<td><input type="range" min="1" max="100" value="1" style="vertical-align:middle;" oninput="setSpeed(this.value)"></td>
+
+				
 			</tr>
 		</table>
-		<table id="myGameTable" style="width:600px;">
+		<hr2></hr2>
+		<table id="myGameTable" style="width:350px; padding:0px;">
 			<tr>
 				<td id="myTextBoxes">
 					Type of Life: B
@@ -92,27 +133,48 @@
 					/S
 					<input type="text" id="txtSVal" value="2,3" style="width:50px;">
 				</td>
-				<td id="myPopTitle" style="text-align:right;vertical-align:text-top;">Population:</td>
-				<td id="myPop" style="text-align:right;width:60px;vertical-align:text-top;"></td>
 			</tr>
 		</table>
-		<table id="myCoordTable" style="width:400px;">
-			<tr style="height:50pt;">
-				<td id="myCamTitle" style="width:105px;">Camera Coords:</td>  <td>(</td>
-					<td id="myCamX" style="width:50px;text-align:right;">0</td><td>,</td>
-					<td id="myCamY" style="width:50px;text-align:right;">0</td><td>,</td>
-					<td id="myCamZ" style="width:50px;text-align:right;">0</td>
-					<td style="padding-right:1px;">)</td>
+		<hr></hr>
+		<table id="mySatusTable" style="width:250px; padding:0px;">
+			<tr>
+				<td id="myStepTitle" style="text-align:left; width:60px;">Current Step:</td>
+				<td id="myStep" style="text-align:left; width:60px;">n/a</td>
 			</tr>
 			<tr>
-				<td id="myLookTitle" style="width:100px;">Look At Coords:</td> <td>(</td>
-					<td id="myLookX" style="width:50px;text-align:right;">0</td><td>,</td>
-					<td id="myLookY" style="width:50px;text-align:right;">0</td><td>,</td>
-					<td id="myLookZ" style="width:50px;text-align:right;">0</td>
-
-					<td style="text-align:right;width:1px;">)</td>
+				<td id="myPopTitle" style="text-align:left; width:60px;">Population:</td>
+				<td id="myPop" style="text-align:left; width:60px;">n/a</td>
 			</tr>
 		</table>
-		
+		<hr2></hr2>
+		<table id="CamCoordTableTitle" style="width:350px; padding:0px; padding-top:15px; padding-bottom:0px;">
+			<tr>
+				<td id="myCamTitle" style="width:200px;">Camera Coords:</td>
+			</tr>
+		<table id="CamCoordTable" style="width:200px;">
+			<tr>
+				<td style="width:50px;text-align:left;">(</td>
+				<td id="myCamX" style="width:50px;text-align:right;">0</td><td>,</td>
+				<td id="myCamY" style="width:50px;text-align:right;">0</td><td>,</td>
+				<td id="myCamZ" style="width:50px;text-align:right;">0</td>
+				<td style="padding-right:1px;">)</td>
+			</tr>
+		</table>
+		<hr2></hr2>
+		<table id="LookCoordTableTitle" style="width:350px; padding:0px; padding-top:20px; padding-bottom:0px;">
+			<tr>
+				<td id="myLookTitle" style="width:200px;">Look At Coords:</td>
+			</tr>
+		</table>
+		<table id="LookCoordTable" style="width:200px; padding:0px;">
+			<tr>	
+				<td>(</td>
+				<td id="myLookX" style="width:50px;text-align:right;">0</td><td>,</td>
+				<td id="myLookY" style="width:50px;text-align:right;">0</td><td>,</td>
+				<td id="myLookZ" style="width:50px;text-align:right;">0</td>
+				<td style="text-align:right;width:1px;">)</td>
+			</tr>
+		</table>
+		<hr></hr>
 	</body>
 </html>
