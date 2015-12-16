@@ -108,8 +108,8 @@ function drawInit()
 	VPMatrix = new Matrix4();
 	
 	// Register the event handler to be called on key press and key release
-	document.onkeydown = function(ev){ keyDown(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix); };
-	document.onkeyup = function(ev){ keyUp(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix); };
+	document.onkeydown = function(ev){ keyDown(ev); };
+	document.onkeyup = function(ev){ keyUp(ev); };
 }
 
 function getShader(gl, scriptId)
