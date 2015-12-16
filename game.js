@@ -64,12 +64,14 @@ function gameInit()
 	
 	lifeBuffer[0] = {arr: setup, chng: checkAllChangeSet}
 	nextWrite++;
-	
-	//bSet["1"] = true;
+/*	
+	bSet["5"] = true;
+	bSet["7"] = true;
+	sSet["6"] = true;
+*/
 	bSet["4"] = true;
 	bSet["5"] = true;
-	sSet["0"] = true;
-	sSet["9"] = true;
+	sSet["5"] = true;
 }
 
 function generateNextStep()
