@@ -29,10 +29,11 @@ var updateSpeed = 2000;
 var lastUpdate;
 
 // angle of the xz plane
-var degLR = 90;
+var yaw = 90;
 // angle of the yz plane
-var degUD = -90;
-
+var pitch = -90;
+// for multiplication, turning degrees into radians
+var p180 = Math.PI/180
 
 function testCubes()
 {
@@ -260,38 +261,38 @@ function draw(highResTimestamp) {
 
 	// The left
 	if(controlSet[37]){
-		degLR -= g_lookSpeed;
+		yaw -= g_lookSpeed/1.6;
 	}	
 	// The right
 	if(controlSet[39]){
-		degLR += g_lookSpeed;
+		yaw += g_lookSpeed/1.6;
 	}	
 	// The up
 	if(controlSet[38]){
-		if(degUD + g_lookSpeed <= -10){
-			degUD += g_lookSpeed;
+		if(pitch + g_lookSpeed/2 <= -10){
+			pitch += g_lookSpeed/2;
 		}
 	}	
 	// The downs
 	if(controlSet[40]){
-		if(degUD - g_lookSpeed >= -176){
-			degUD -= g_lookSpeed;
+		if(pitch - g_lookSpeed/2 >= -176){
+			pitch -= g_lookSpeed/2;
 		}
 	}	
 
-	g_centerX = g_eyeX + (10 * Math.cos(degLR*3.1416/180) * Math.sin(degUD*3.1416/180))
-	g_centerY = g_eyeY + (10 * Math.cos(degUD*3.1416/180))
-	g_centerZ = g_eyeZ + (10 * Math.sin(degLR*3.1416/180) * Math.sin(degUD*3.1416/180))
+	g_centerX = g_eyeX + (10 * Math.cos(yaw*p180) * Math.sin(pitch*p180))
+	g_centerY = g_eyeY + (10 * Math.cos(pitch*p180))
+	g_centerZ = g_eyeZ + (10 * Math.sin(yaw*p180) * Math.sin(pitch*p180))
 
 	// The A (left)
 	if(controlSet[65]){
-		g_eyeX -= Math.sin(degLR*3.1416/180) * g_moveSpeed;
-		g_eyeZ += Math.cos(degLR*3.1416/180) * g_moveSpeed;
+		g_eyeX -= Math.sin(yaw*p180) * g_moveSpeed;
+		g_eyeZ += Math.cos(yaw*p180) * g_moveSpeed;
 	}
 	// The D (right)
 	if(controlSet[68]){
-		g_eyeX += Math.sin(degLR*3.1416/180) * g_moveSpeed;
-		g_eyeZ -= Math.cos(degLR*3.1416/180) * g_moveSpeed;
+		g_eyeX += Math.sin(yaw*p180) * g_moveSpeed;
+		g_eyeZ -= Math.cos(yaw*p180) * g_moveSpeed;
 	}
 	// The E (up)
 	if(controlSet[69]){
@@ -303,18 +304,18 @@ function draw(highResTimestamp) {
 	}
 	// The W (forward)
 	if(controlSet[87]){
-		g_eyeX -= Math.sin((90+degLR)*3.1416/180) * g_moveSpeed;
-		g_eyeZ += Math.cos((90+degLR)*3.1416/180) * g_moveSpeed;
+		g_eyeX -= Math.sin((90+yaw)*p180) * g_moveSpeed;
+		g_eyeZ += Math.cos((90+yaw)*p180) * g_moveSpeed;
 	}
 	// The S (back)
 	if(controlSet[83]){
-		g_eyeX += Math.sin((90+degLR)*3.1416/180) * g_moveSpeed;
-		g_eyeZ -= Math.cos((90+degLR)*3.1416/180) * g_moveSpeed;
+		g_eyeX += Math.sin((90+yaw)*p180) * g_moveSpeed;
+		g_eyeZ -= Math.cos((90+yaw)*p180) * g_moveSpeed;
 	}
 
-	g_centerX = g_eyeX + (10 * Math.cos(degLR*3.1416/180) * Math.sin(degUD*3.1416/180))
-	g_centerY = g_eyeY + (10 * Math.cos(degUD*3.1416/180))
-	g_centerZ = g_eyeZ + (10 * Math.sin(degLR*3.1416/180) * Math.sin(degUD*3.1416/180))
+	g_centerX = g_eyeX + (10 * Math.cos(yaw*p180) * Math.sin(pitch*p180))
+	g_centerY = g_eyeY + (10 * Math.cos(pitch*p180))
+	g_centerZ = g_eyeZ + (10 * Math.sin(yaw*p180) * Math.sin(pitch*p180))
 	
 	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 200.0);
 	VPMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ,	g_centerX, 	g_centerY, 	g_centerZ, 0.0, 1.0, 0.0);
@@ -334,8 +335,8 @@ function draw(highResTimestamp) {
 		}
 	}
 
-	setStep(degLR);
-	setPopulation(degUD);
+	setStep(yaw);
+	setPopulation(pitch);
 	setEyePos(g_eyeX, g_eyeY, g_eyeZ);
 	setRefPos(g_centerX, g_centerY, g_centerZ);
 	
