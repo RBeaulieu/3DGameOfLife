@@ -22,11 +22,19 @@ var g_numIndices;
 var g_aPosition;
 // Storage location of u_MVPMatrix
 var g_uMVPMatrix;
+// Storage location of u_NormalMatrix
+var g_uNormalMatrix;
 // Model-View transformation matrix
 var g_vpMatrix = new Matrix4();
 // Model-View-Project transformation matrix
 var g_mvpMatrix = new Matrix4();
+// Size of outline
+var g_outlineSize;
+// Origin of outline
+var g_outlineOrigin;
 
+// Control set
+var g_controlSet = [];
 // Movement speed
 var g_moveSpeed = 0.5;
 // Look speed
@@ -35,9 +43,6 @@ var g_lookSpeed = 2;
 var g_eyeX = 30.0, g_eyeY = 31.5, g_eyeZ = 60.0;
 // Reference coordinates
 var g_centerX = 0.0, g_centerY = 0.0, g_centerZ = 0.0;
-// Control set
-var g_controlSet = [];
-
 // angle of the xz plane
 var g_yaw = 90;
 // angle of the yz plane
@@ -109,10 +114,15 @@ function drawInit()
 	// Get the storage locations of attribute and uniform variables
 	g_aPosition = g_webGL.getAttribLocation(g_webGL.program, 'a_Position');
 	g_uMVPMatrix = g_webGL.getUniformLocation(g_webGL.program, 'u_MVPMatrix');
+	// var g_uNormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
+	// if (g_aPosition < 0 || !g_uMVPMatrix || !g_uNormalMatrix) {
 	if (g_aPosition < 0 || !g_uMVPMatrix) {
 		console.log('*** Error: Failed to get the storage location of attribute or uniform variable');
 		return;
 	}
+	
+	g_outlineSize = size * 3.0 / 2.0;
+	g_outlineOrigin = g_outlineSize - 1.5;
 	
 	// Register the event handler to be called on key press and key release
 	document.onkeydown = function(ev){ keyDown(ev); };
@@ -142,7 +152,7 @@ function initVertexBuffers(g_webGL)
 	//  |/      |/
 	//  v2------v3
 	
-	var vertices = new Float32Array([   // Vertex coordinates
+	var cubeVertices = new Float32Array([   // Vertex coordinates
 		1.0, 1.0, 1.0,  -1.0, 1.0, 1.0,  -1.0,-1.0, 1.0,   1.0,-1.0, 1.0,  // v0-v1-v2-v3 front
 		1.0, 1.0, 1.0,   1.0,-1.0, 1.0,   1.0,-1.0,-1.0,   1.0, 1.0,-1.0,  // v0-v3-v4-v5 right
 		1.0, 1.0, 1.0,   1.0, 1.0,-1.0,  -1.0, 1.0,-1.0,  -1.0, 1.0, 1.0,  // v0-v5-v6-v1 up
@@ -151,7 +161,7 @@ function initVertexBuffers(g_webGL)
 		1.0,-1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0, 1.0,-1.0,   1.0, 1.0,-1.0   // v4-v7-v6-v5 back
 	]);
 	
-	var colors = new Float32Array([     // Colors
+	var cubeColors = new Float32Array([     // Colors
 		0.4, 0.4, 1.0,  0.4, 0.4, 1.0,  0.4, 0.4, 1.0,  0.4, 0.4, 1.0,  // v0-v1-v2-v3 front(blue)
 		0.4, 1.0, 0.4,  0.4, 1.0, 0.4,  0.4, 1.0, 0.4,  0.4, 1.0, 0.4,  // v0-v3-v4-v5 right(green)
 		1.0, 0.4, 0.4,  1.0, 0.4, 0.4,  1.0, 0.4, 0.4,  1.0, 0.4, 0.4,  // v0-v5-v6-v1 up(red)
@@ -160,7 +170,7 @@ function initVertexBuffers(g_webGL)
 		0.4, 1.0, 1.0,  0.4, 1.0, 1.0,  0.4, 1.0, 1.0,  0.4, 1.0, 1.0   // v4-v7-v6-v5 back
 	]);
 	
-	var indices = new Uint8Array([       // Indices of the vertices
+	var cubeIndices = new Uint8Array([       // Indices of the vertices
 		0, 1, 2,   0, 2, 3,    // front
 		4, 5, 6,   4, 6, 7,    // right
 		8, 9,10,   8,10,11,    // up
@@ -170,10 +180,10 @@ function initVertexBuffers(g_webGL)
 	]);
 	
 	// Write coords to buffers, but don't assign to attribute variables
-	g_cubeBuffer = initArrayBufferForLaterUse(g_webGL, vertices, 3, g_webGL.FLOAT);
+	g_cubeBuffer = initArrayBufferForLaterUse(g_webGL, cubeVertices, 3, g_webGL.FLOAT);
 	
-	if (!initArrayBuffer(g_webGL, 'a_Color', colors, 3, g_webGL.FLOAT)) { return -1; }
-	//if (!initArrayBuffer(g_webGL, 'a_Normal', normals, 3, g_webGL.FLOAT)) { return -1; }
+	if (!initArrayBuffer(g_webGL, 'a_Color', cubeColors, 3, g_webGL.FLOAT)) { return -1; }
+	//if (!initArrayBuffer(g_webGL, 'a_Normal', cubeNormals, 3, g_webGL.FLOAT)) { return -1; }
 	
 	// Write the indices to the buffer object
 	var indexBuffer = g_webGL.createBuffer();
@@ -184,9 +194,9 @@ function initVertexBuffers(g_webGL)
 	
 	// Write the indices to the buffer object
 	g_webGL.bindBuffer(g_webGL.ELEMENT_ARRAY_BUFFER, indexBuffer);
-	g_webGL.bufferData(g_webGL.ELEMENT_ARRAY_BUFFER, indices, g_webGL.STATIC_DRAW);
+	g_webGL.bufferData(g_webGL.ELEMENT_ARRAY_BUFFER, cubeIndices, g_webGL.STATIC_DRAW);
 	
-	return indices.length;
+	return cubeIndices.length;
 }
 
 function initArrayBufferForLaterUse(g_webGL, data, num, type){
@@ -232,18 +242,11 @@ function initArrayBuffer(g_webGL, attribute, data, num, type)
 	return true;
 }
 
-function keyDown(ev)
-{	g_controlSet[ev.keyCode] = 1;
-}
+function keyDown(ev){ g_controlSet[ev.keyCode] = 1; }
 
-function keyUp(ev)
-{	g_controlSet[ev.keyCode] = 0;
-}
+function keyUp(ev){ g_controlSet[ev.keyCode] = 0; }
 
 function moveCamera(){
-		// Clear color and depth buffer
-	g_webGL.clear(g_webGL.COLOR_BUFFER_BIT | g_webGL.DEPTH_BUFFER_BIT);
-
 	// The left
 	if(g_controlSet[37]){
 		g_yaw -= g_lookSpeed;
@@ -310,9 +313,14 @@ function draw(highResTimestamp) {
 	requestAnimationFrame(draw);
 	
 	moveCamera();
+	
+	// Clear color and depth buffer
+	g_webGL.clear(g_webGL.COLOR_BUFFER_BIT | g_webGL.DEPTH_BUFFER_BIT);
 
 	g_vpMatrix.setPerspective(70.0, g_canvas.width / g_canvas.height, 1.0, 200.0);
 	g_vpMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ,	g_centerX, 	g_centerY, 	g_centerZ, 0.0, 1.0, 0.0);
+	
+	drawLargeCubeOutline();
 	
 	//Read the 3D Array
 	for(var z = 0; z < size; z++)
@@ -353,4 +361,22 @@ function drawCube(x, y, z)
 	
 	// Draw
 	g_webGL.drawElements(g_webGL.TRIANGLES, g_numIndices, g_webGL.UNSIGNED_BYTE, 0);
+}
+
+function drawLargeCubeOutline()
+{
+	g_webGL.bindBuffer(g_webGL.ARRAY_BUFFER, g_cubeBuffer);
+	// Assign the buffer object to the attribute variable
+	g_webGL.vertexAttribPointer(g_aPosition, g_cubeBuffer.num, g_cubeBuffer.type, false, 0, 0);
+	// Enable the assignment of the buffer object to the attribute variable
+	g_webGL.enableVertexAttribArray(g_aPosition);
+	
+	// Calculate the model view project matrix and pass it to u_MVPMatrix
+	g_mvpMatrix.set(g_vpMatrix);
+	g_mvpMatrix.translate(g_outlineOrigin, g_outlineOrigin, g_outlineOrigin);
+	g_mvpMatrix.scale(g_outlineSize, g_outlineSize, g_outlineSize);
+	g_webGL.uniformMatrix4fv(g_uMVPMatrix, false, g_mvpMatrix.elements);
+	
+	// Draw
+	g_webGL.drawElements(g_webGL.LINES, g_numIndices, g_webGL.UNSIGNED_BYTE, 0);
 }
