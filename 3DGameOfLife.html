@@ -7,34 +7,27 @@
 		<style type="text/css">
 			<!-- -->
 	      html{
-	      	padding-top: 10px;
-	      	padding-right: 10px;
-    		background-color: #333;
-	        font-family: "Courier New", "lucida console";
-	        font-weight: bold;
-	       	color: #FFF;
-	        position: fixed;
-		    top: 0;
-		    right: 0;
+	      	background-color: #333;
 	      }
 	      body{
-	      	padding-top: 10px;
-	      	padding-right: 10px;
-    		background-color: #333;
+			background-color: #000;
 	        font-family: "Courier New", "lucida console";
 	        font-weight: bold;
 	       	color: #FFF;
+	      	padding-left: 70%;
 	        position: fixed;
-		    right: 0;
+	      	width: 30%;
+		    left: 0;
 		    top: 0;
 	      }
 	      canvas{
-	        width: 60%-350px;
+	        width: 70%;
+	        height: auto;
+	        overflow: hidden;
 	        padding-bottom: 30%;
 	        position: fixed;
 	        left: 0;
 	        top: 0;
-    overflow:hidden;
 	      }
 		</style>
 		<script src="lib/webgl-utils.js"></script>
@@ -72,7 +65,7 @@
 		<h5 id="myh5">By: Raphael Beaulieu and Elliot Coy</h5>
 	</header>
 
-	<canvas id="myWebGLCanvas" width="600" height="400">Your browser does not support the canvas tag.</canvas>
+	<canvas id="myWebGLCanvas" width="900" height="600">Your browser does not support the canvas tag.</canvas>
 	
 	<body onload="main()">
 
