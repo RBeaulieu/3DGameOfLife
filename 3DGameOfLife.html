@@ -6,14 +6,35 @@
 		<title id="myTitle">3D Conway's Game of Life</title>
 		<style type="text/css">
 			<!-- -->
-	      html,body,canvas{
-	      	padding:10px;
-    		background-color: #000;
+	      html{
+	      	padding-top: 10px;
+	      	padding-right: 10px;
+    		background-color: #333;
 	        font-family: "Courier New", "lucida console";
 	        font-weight: bold;
 	       	color: #FFF;
-	        height: 80%;
-	        padding-right: 20%;
+	        position: fixed;
+		    top: 0;
+		    right: 0;
+	      }
+	      body{
+	      	padding-top: 10px;
+	      	padding-right: 10px;
+    		background-color: #333;
+	        font-family: "Courier New", "lucida console";
+	        font-weight: bold;
+	       	color: #FFF;
+	        position: fixed;
+		    right: 0;
+		    top: 0;
+	      }
+	      canvas{
+	        width: 60%-350px;
+	        padding-bottom: 30%;
+	        position: fixed;
+	        left: 0;
+	        top: 0;
+    overflow:hidden;
 	      }
 		</style>
 		<script src="lib/webgl-utils.js"></script>
@@ -40,7 +61,7 @@
 			precision mediump float;
 			
 			varying vec4 v_Color;
-			
+
 			void main() {
 				gl_FragColor = v_Color;
 			}
@@ -50,8 +71,12 @@
 		<h1 id="myh1">3D Conway's Game of Life</h1>
 		<h5 id="myh5">By: Raphael Beaulieu and Elliot Coy</h5>
 	</header>
+
+	<canvas id="myWebGLCanvas" width="600" height="400">Your browser does not support the canvas tag.</canvas>
+	
 	<body onload="main()">
-		<canvas id="myWebGLCanvas" width="600" height="400">Your browser does not support the canvas tag.</canvas>
+
+		
 		
 		<table id="myPlayTable" style="width:600px;">
 			<tr>
@@ -90,7 +115,8 @@
 				<td id="myLookTitle" style="width:100px;">Look At Coords:</td> <td>(</td>
 					<td id="myLookX" style="width:50px;text-align:right;">0</td><td>,</td>
 					<td id="myLookY" style="width:50px;text-align:right;">0</td><td>,</td>
-					<td id="myLookZ" style="width:50px;text-align:right;">0</td>
+					<td id="myLookZ" style="width:50px;text-align:right;">0</td>
+
 					<td style="text-align:right;width:1px;">)</td>
 			</tr>
 		</table>
