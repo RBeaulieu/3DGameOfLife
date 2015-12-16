@@ -267,43 +267,23 @@ function draw(highResTimestamp) {
 	g_webGL.clear(g_webGL.COLOR_BUFFER_BIT | g_webGL.DEPTH_BUFFER_BIT);
 
 	// The left
-<<<<<<< HEAD
 	if(g_controlSet[37]){
-		degLR -= g_lookSpeed;
-	}	
-	// The right
-	if(g_controlSet[39]){
-		degLR += g_lookSpeed;
-	}	
-	// The up
-	if(g_controlSet[38]){
-		if(degUD + g_lookSpeed <= -10){
-			degUD += g_lookSpeed;
-		}
-	}	
-	// The downs
-	if(g_controlSet[40]){
-		if(degUD - g_lookSpeed >= -176){
-			degUD -= g_lookSpeed;
-=======
-	if(controlSet[37]){
 		yaw -= g_lookSpeed;
 	}	
 	// The right
-	if(controlSet[39]){
+	if(g_controlSet[39]){
 		yaw += g_lookSpeed;
 	}	
 	// The up
-	if(controlSet[38]){
+	if(g_controlSet[38]){
 		if(pitch + g_lookSpeed <= -10){
 			pitch += g_lookSpeed;
 		}
 	}	
 	// The downs
-	if(controlSet[40]){
+	if(g_controlSet[40]){
 		if(pitch - g_lookSpeed >= -176){
 			pitch -= g_lookSpeed;
->>>>>>> refs/remotes/origin/master
 		}
 	}	
 
@@ -312,25 +292,14 @@ function draw(highResTimestamp) {
 	g_centerZ = g_eyeZ + (10 * Math.sin(yaw*p180) * Math.sin(pitch*p180))
 
 	// The A (left)
-<<<<<<< HEAD
 	if(g_controlSet[65]){
-		g_eyeX -= Math.sin(degLR*3.1416/180) * g_moveSpeed;
-		g_eyeZ += Math.cos(degLR*3.1416/180) * g_moveSpeed;
-	}
-	// The D (right)
-	if(g_controlSet[68]){
-		g_eyeX += Math.sin(degLR*3.1416/180) * g_moveSpeed;
-		g_eyeZ -= Math.cos(degLR*3.1416/180) * g_moveSpeed;
-=======
-	if(controlSet[65]){
 		g_eyeX -= Math.sin(yaw*p180) * g_moveSpeed;
 		g_eyeZ += Math.cos(yaw*p180) * g_moveSpeed;
 	}
 	// The D (right)
-	if(controlSet[68]){
+	if(g_controlSet[68]){
 		g_eyeX += Math.sin(yaw*p180) * g_moveSpeed;
 		g_eyeZ -= Math.cos(yaw*p180) * g_moveSpeed;
->>>>>>> refs/remotes/origin/master
 	}
 	// The E (up)
 	if(g_controlSet[69]){
@@ -341,27 +310,16 @@ function draw(highResTimestamp) {
 		g_eyeY += g_moveSpeed;
 	}
 	// The W (forward)
-<<<<<<< HEAD
 	if(g_controlSet[87]){
-		g_eyeX -= Math.sin((90+degLR)*3.1416/180) * g_moveSpeed;
-		g_eyeZ += Math.cos((90+degLR)*3.1416/180) * g_moveSpeed;
-	}
-	// The S (back)
-	if(g_controlSet[83]){
-		g_eyeX += Math.sin((90+degLR)*3.1416/180) * g_moveSpeed;
-		g_eyeZ -= Math.cos((90+degLR)*3.1416/180) * g_moveSpeed;
-=======
-	if(controlSet[87]){
 		g_eyeX += g_moveSpeed * Math.cos(yaw*p180) * Math.sin(pitch*p180)
 		g_eyeY += g_moveSpeed * Math.cos(pitch*p180)
 		g_eyeZ += g_moveSpeed * Math.sin(yaw*p180) * Math.sin(pitch*p180)
 	}
 	// The S (back)
-	if(controlSet[83]){
+	if(g_controlSet[83]){
 		g_eyeX -= g_moveSpeed * Math.cos(yaw*p180) * Math.sin(pitch*p180)
 		g_eyeY -= g_moveSpeed * Math.cos(pitch*p180)
 		g_eyeZ -= g_moveSpeed * Math.sin(yaw*p180) * Math.sin(pitch*p180)
->>>>>>> refs/remotes/origin/master
 	}
 
 	g_centerX = g_eyeX + (10 * Math.cos(yaw*p180) * Math.sin(pitch*p180))
