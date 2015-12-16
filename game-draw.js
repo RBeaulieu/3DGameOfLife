@@ -10,7 +10,7 @@ var g_webGL;
 // Draw locations
 var g_currStep = [];
 // Update step speed
-var g_updateSpeed = 2000;
+var g_updateSpeed = 1000;
 // Last update time
 var g_lastUpdate;
 
@@ -233,37 +233,15 @@ function initArrayBuffer(g_webGL, attribute, data, num, type)
 }
 
 function keyDown(ev)
-{
-	if(ev.keyCode == 37) { g_controlSet[37] = 1; } // The left arrow key was pressed
-	if(ev.keyCode == 38) { g_controlSet[38] = 1; } // The up arrow key was pressed
-	if(ev.keyCode == 39) { g_controlSet[39] = 1; } // The right arrow key was pressed
-	if(ev.keyCode == 40) { g_controlSet[40] = 1; } // The down arrow key was pressed
-	if(ev.keyCode == 65) { g_controlSet[65] = 1; } // The A key was pressed
-	if(ev.keyCode == 68) { g_controlSet[68] = 1; } // The D key was pressed
-	if(ev.keyCode == 69) { g_controlSet[69] = 1; } // The E key was pressed
-	if(ev.keyCode == 81) { g_controlSet[81] = 1; } // The Q key was pressed
-	if(ev.keyCode == 83) { g_controlSet[83] = 1; } // The S key was pressed
-	if(ev.keyCode == 87) { g_controlSet[87] = 1; } // The W key was pressed
+{	g_controlSet[ev.keyCode] = 1;
 }
 
 function keyUp(ev)
-{
-	if(ev.keyCode == 37) { g_controlSet[37] = 0; } // The left arrow key was released
-	if(ev.keyCode == 38) { g_controlSet[38] = 0; } // The up arrow key was released
-	if(ev.keyCode == 39) { g_controlSet[39] = 0; } // The right arrow key was released
-	if(ev.keyCode == 40) { g_controlSet[40] = 0; } // The down arrow key was released
-	if(ev.keyCode == 65) { g_controlSet[65] = 0; } // The A key was released
-	if(ev.keyCode == 68) { g_controlSet[68] = 0; } // The D key was released
-	if(ev.keyCode == 69) { g_controlSet[69] = 0; } // The E key was released
-	if(ev.keyCode == 81) { g_controlSet[81] = 0; } // The Q key was released
-	if(ev.keyCode == 83) { g_controlSet[83] = 0; } // The S key was released
-	if(ev.keyCode == 87) { g_controlSet[87] = 0; } // The W key was released
+{	g_controlSet[ev.keyCode] = 0;
 }
 
-function draw(highResTimestamp) {
-	requestAnimationFrame(draw);
-	
-	// Clear color and depth buffer
+function moveCamera(){
+		// Clear color and depth buffer
 	g_webGL.clear(g_webGL.COLOR_BUFFER_BIT | g_webGL.DEPTH_BUFFER_BIT);
 
 	// The left
@@ -326,6 +304,13 @@ function draw(highResTimestamp) {
 	g_centerY = g_eyeY + (10 * Math.cos(g_pitch*g_pi180))
 	g_centerZ = g_eyeZ + (10 * Math.sin(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180))
 	
+}
+
+function draw(highResTimestamp) {
+	requestAnimationFrame(draw);
+	
+	moveCamera();
+
 	g_vpMatrix.setPerspective(70.0, g_canvas.width / g_canvas.height, 1.0, 200.0);
 	g_vpMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ,	g_centerX, 	g_centerY, 	g_centerZ, 0.0, 1.0, 0.0);
 	
