@@ -2,12 +2,31 @@
 var VSHADER_SOURCE = null;
 // Fragment shader program
 var FSHADER_SOURCE = null;
+// Instance of canvas
+var g_canvas;
+// Instance of WebGL context
+var g_webGL;
+
 // Draw locations
 var g_currStep = [];
+// Update step speed
+var g_updateSpeed = 2000;
+// Last update time
+var g_lastUpdate;
+
 // Cube buffer that stores the vertices for the cube
 var g_cubeBuffer = null;
-// Coordinate transformation matrix
+// Number of indices for cube
+var g_numIndices;
+// Storage location of a_Position
+var g_aPosition;
+// Storage location of u_MVPMatrix
+var g_uMVPMatrix;
+// Model-View transformation matrix
+var g_vpMatrix = new Matrix4();
+// Model-View-Project transformation matrix
 var g_mvpMatrix = new Matrix4();
+
 // Movement speed
 var g_moveSpeed = 0.5;
 // Look speed
@@ -16,17 +35,8 @@ var g_lookSpeed = 2;
 var g_eyeX = 30.0, g_eyeY = 32.0, g_eyeZ = 60.0;
 // Reference coordinates
 var g_centerX = 0.0, g_centerY = 0.0, g_centerZ = 0.0;
-
-//KEYDOWN VARIABLES
-var gl;
-var n;
-var VPMatrix;
-var a_Position;
-var u_MVPMatrix;
-var controlSet = [];
-var isStopped;
-var updateSpeed = 2000;
-var lastUpdate;
+// Control set
+var g_controlSet = [];
 
 // angle of the xz plane
 var yaw = 90;
@@ -59,60 +69,57 @@ function drawInit()
 	// Set up test cube array (comment out if using game)
 	//testCubes();
 	g_currStep = lifeBuffer[0].arr;
-	lastUpdate = 0;
+	g_lastUpdate = 0;
 	
 	// Retrieve <canvas> element
-	var canvas = document.getElementById('myWebGLCanvas');
+	g_canvas = document.getElementById('myWebGLCanvas');
 	
 	// Get the rendering context for WebGL
-	gl = getWebGLContext(canvas);
-	if (!gl) {
+	g_webGL = getWebGLContext(g_canvas);
+	if (!g_webGL) {
 		console.log('*** Error: Failed to get the rendering context for WebGL');
 		return;
 	}
 	
 	// Retrieve vertex shader and fragment shader from HTML page
-	getShader(gl, 'shader-vs');
-	getShader(gl, 'shader-fs');
+	getShader(g_webGL, 'shader-vs');
+	getShader(g_webGL, 'shader-fs');
 	
 	// Initialize shaders
-	if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
+	if (!initShaders(g_webGL, VSHADER_SOURCE, FSHADER_SOURCE)) {
 		console.log('*** Error: Failed to intialize shaders.');
 		return;
 	}
 	// Set vertex information
-	n = initVertexBuffers(gl);
-	if (n < 0) {
+	g_numIndices = initVertexBuffers(g_webGL);
+	if (g_numIndices < 0) {
 		console.log('*** Error: Failed to set the vertex information');
 		return;
 	}
 	
 	// Specify the color for clearing <canvas>
-	gl.clearColor(0.0, 0.0, 0.0, 1.0);
+	g_webGL.clearColor(0.0, 0.0, 0.0, 1.0);
 	// Enable depth testing
-	gl.enable(gl.DEPTH_TEST);
+	g_webGL.enable(g_webGL.DEPTH_TEST);
 	// Turn on face culling
-	gl.enable(gl.CULL_FACE);
+	g_webGL.enable(g_webGL.CULL_FACE);
 	// Set to cull back faces
-	gl.cullFace(gl.BACK);
+	g_webGL.cullFace(g_webGL.BACK);
 	
 	// Get the storage locations of attribute and uniform variables
-	a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-	u_MVPMatrix = gl.getUniformLocation(gl.program, 'u_MVPMatrix');
-	if (a_Position < 0 || !u_MVPMatrix) {
+	g_aPosition = g_webGL.getAttribLocation(g_webGL.program, 'a_Position');
+	g_uMVPMatrix = g_webGL.getUniformLocation(g_webGL.program, 'u_MVPMatrix');
+	if (g_aPosition < 0 || !g_uMVPMatrix) {
 		console.log('*** Error: Failed to get the storage location of attribute or uniform variable');
 		return;
 	}
-	
-	// Calculate the view projection matrix
-	VPMatrix = new Matrix4();
 	
 	// Register the event handler to be called on key press and key release
 	document.onkeydown = function(ev){ keyDown(ev); };
 	document.onkeyup = function(ev){ keyUp(ev); };
 }
 
-function getShader(gl, scriptId)
+function getShader(g_webGL, scriptId)
 {
 	// Retrieve shader by HTML ID
 	var shaderScript = document.getElementById(scriptId);
@@ -124,7 +131,7 @@ function getShader(gl, scriptId)
 	else { console.log('*** Error: shader type not set'); }
 }
 
-function initVertexBuffers(gl)
+function initVertexBuffers(g_webGL)
 {
 	// Create a cube
 	//    v6----- v5
@@ -163,33 +170,34 @@ function initVertexBuffers(gl)
 	]);
 	
 	// Write coords to buffers, but don't assign to attribute variables
-	g_cubeBuffer = initArrayBufferForLaterUse(gl, vertices, 3, gl.FLOAT);
+	g_cubeBuffer = initArrayBufferForLaterUse(g_webGL, vertices, 3, g_webGL.FLOAT);
 	
-	if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) { return -1; }
+	if (!initArrayBuffer(g_webGL, 'a_Color', colors, 3, g_webGL.FLOAT)) { return -1; }
+	//if (!initArrayBuffer(g_webGL, 'a_Normal', normals, 3, g_webGL.FLOAT)) { return -1; }
 	
 	// Write the indices to the buffer object
-	var indexBuffer = gl.createBuffer();
+	var indexBuffer = g_webGL.createBuffer();
 	if (!indexBuffer) {
 		console.log('Failed to create the buffer object');
 		return -1;
 	}
 	
 	// Write the indices to the buffer object
-	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+	g_webGL.bindBuffer(g_webGL.ELEMENT_ARRAY_BUFFER, indexBuffer);
+	g_webGL.bufferData(g_webGL.ELEMENT_ARRAY_BUFFER, indices, g_webGL.STATIC_DRAW);
 	
 	return indices.length;
 }
 
-function initArrayBufferForLaterUse(gl, data, num, type){
-	var buffer = gl.createBuffer();   // Create a buffer object
+function initArrayBufferForLaterUse(g_webGL, data, num, type){
+	var buffer = g_webGL.createBuffer();   // Create a buffer object
 	if (!buffer) {
 	console.log('Failed to create the buffer object');
 	return null;
 	}
 	// Write date into the buffer object
-	gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-	gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+	g_webGL.bindBuffer(g_webGL.ARRAY_BUFFER, buffer);
+	g_webGL.bufferData(g_webGL.ARRAY_BUFFER, data, g_webGL.STATIC_DRAW);
 	
 	// Store the necessary information to assign the object to the attribute variable later
 	buffer.num = num;
@@ -198,83 +206,82 @@ function initArrayBufferForLaterUse(gl, data, num, type){
 	return buffer;
 }
 
-function initArrayBuffer(gl, attribute, data, num, type)
+function initArrayBuffer(g_webGL, attribute, data, num, type)
 {
-	var buffer = gl.createBuffer();   // Create a buffer object
+	var buffer = g_webGL.createBuffer();   // Create a buffer object
 	if (!buffer) {
 		console.log('Failed to create the buffer object');
 		return false;
 	}
 	
 	// Write date into the buffer object
-	gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-	gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+	g_webGL.bindBuffer(g_webGL.ARRAY_BUFFER, buffer);
+	g_webGL.bufferData(g_webGL.ARRAY_BUFFER, data, g_webGL.STATIC_DRAW);
 	
 	// Assign the buffer object to the attribute variable
-	var a_attribute = gl.getAttribLocation(gl.program, attribute);
+	var a_attribute = g_webGL.getAttribLocation(g_webGL.program, attribute);
 	if (a_attribute < 0) {
 		console.log('Failed to get the storage location of ' + attribute);
 		return false;
 	}
-	gl.vertexAttribPointer(a_attribute, num, type, false, 0, 0);
+	g_webGL.vertexAttribPointer(a_attribute, num, type, false, 0, 0);
 	
 	// Enable the assignment of the buffer object to the attribute variable
-	gl.enableVertexAttribArray(a_attribute);
+	g_webGL.enableVertexAttribArray(a_attribute);
 	
 	return true;
 }
 
-//function keyDown(ev, gl, n, VPMatrix, a_Position, u_MVPMatrix)
 function keyDown(ev)
 {
-	if(ev.keyCode == 37) { controlSet[37] = 1; } // The left arrow key was pressed
-	if(ev.keyCode == 38) { controlSet[38] = 1; } // The up arrow key was pressed
-	if(ev.keyCode == 39) { controlSet[39] = 1; } // The right arrow key was pressed
-	if(ev.keyCode == 40) { controlSet[40] = 1; } // The down arrow key was pressed
-	if(ev.keyCode == 65) { controlSet[65] = 1; } // The A key was pressed
-	if(ev.keyCode == 68) { controlSet[68] = 1; } // The D key was pressed
-	if(ev.keyCode == 69) { controlSet[69] = 1; } // The E key was pressed
-	if(ev.keyCode == 81) { controlSet[81] = 1; } // The Q key was pressed
-	if(ev.keyCode == 83) { controlSet[83] = 1; } // The S key was pressed
-	if(ev.keyCode == 87) { controlSet[87] = 1; } // The W key was pressed
+	if(ev.keyCode == 37) { g_controlSet[37] = 1; } // The left arrow key was pressed
+	if(ev.keyCode == 38) { g_controlSet[38] = 1; } // The up arrow key was pressed
+	if(ev.keyCode == 39) { g_controlSet[39] = 1; } // The right arrow key was pressed
+	if(ev.keyCode == 40) { g_controlSet[40] = 1; } // The down arrow key was pressed
+	if(ev.keyCode == 65) { g_controlSet[65] = 1; } // The A key was pressed
+	if(ev.keyCode == 68) { g_controlSet[68] = 1; } // The D key was pressed
+	if(ev.keyCode == 69) { g_controlSet[69] = 1; } // The E key was pressed
+	if(ev.keyCode == 81) { g_controlSet[81] = 1; } // The Q key was pressed
+	if(ev.keyCode == 83) { g_controlSet[83] = 1; } // The S key was pressed
+	if(ev.keyCode == 87) { g_controlSet[87] = 1; } // The W key was pressed
 }
 
 function keyUp(ev)
 {
-	if(ev.keyCode == 37) { controlSet[37] = 0; } // The left arrow key was released
-	if(ev.keyCode == 38) { controlSet[38] = 0; } // The up arrow key was released
-	if(ev.keyCode == 39) { controlSet[39] = 0; } // The right arrow key was released
-	if(ev.keyCode == 40) { controlSet[40] = 0; } // The down arrow key was released
-	if(ev.keyCode == 65) { controlSet[65] = 0; } // The A key was released
-	if(ev.keyCode == 68) { controlSet[68] = 0; } // The D key was released
-	if(ev.keyCode == 69) { controlSet[69] = 0; } // The E key was released
-	if(ev.keyCode == 81) { controlSet[81] = 0; } // The Q key was released
-	if(ev.keyCode == 83) { controlSet[83] = 0; } // The S key was released
-	if(ev.keyCode == 87) { controlSet[87] = 0; } // The W key was released
+	if(ev.keyCode == 37) { g_controlSet[37] = 0; } // The left arrow key was released
+	if(ev.keyCode == 38) { g_controlSet[38] = 0; } // The up arrow key was released
+	if(ev.keyCode == 39) { g_controlSet[39] = 0; } // The right arrow key was released
+	if(ev.keyCode == 40) { g_controlSet[40] = 0; } // The down arrow key was released
+	if(ev.keyCode == 65) { g_controlSet[65] = 0; } // The A key was released
+	if(ev.keyCode == 68) { g_controlSet[68] = 0; } // The D key was released
+	if(ev.keyCode == 69) { g_controlSet[69] = 0; } // The E key was released
+	if(ev.keyCode == 81) { g_controlSet[81] = 0; } // The Q key was released
+	if(ev.keyCode == 83) { g_controlSet[83] = 0; } // The S key was released
+	if(ev.keyCode == 87) { g_controlSet[87] = 0; } // The W key was released
 }
 
 function draw(highResTimestamp) {
 	requestAnimationFrame(draw);
 	
 	// Clear color and depth buffer
-	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	g_webGL.clear(g_webGL.COLOR_BUFFER_BIT | g_webGL.DEPTH_BUFFER_BIT);
 
 	// The left
-	if(controlSet[37]){
+	if(g_controlSet[37]){
 		yaw -= g_lookSpeed;
 	}	
 	// The right
-	if(controlSet[39]){
+	if(g_controlSet[39]){
 		yaw += g_lookSpeed;
 	}	
 	// The up
-	if(controlSet[38]){
+	if(g_controlSet[38]){
 		if(pitch + g_lookSpeed <= -10){
 			pitch += g_lookSpeed;
 		}
 	}	
 	// The downs
-	if(controlSet[40]){
+	if(g_controlSet[40]){
 		if(pitch - g_lookSpeed >= -176){
 			pitch -= g_lookSpeed;
 		}
@@ -285,31 +292,31 @@ function draw(highResTimestamp) {
 	g_centerZ = g_eyeZ + (10 * Math.sin(yaw*p180) * Math.sin(pitch*p180))
 
 	// The A (left)
-	if(controlSet[65]){
+	if(g_controlSet[65]){
 		g_eyeX -= Math.sin(yaw*p180) * g_moveSpeed;
 		g_eyeZ += Math.cos(yaw*p180) * g_moveSpeed;
 	}
 	// The D (right)
-	if(controlSet[68]){
+	if(g_controlSet[68]){
 		g_eyeX += Math.sin(yaw*p180) * g_moveSpeed;
 		g_eyeZ -= Math.cos(yaw*p180) * g_moveSpeed;
 	}
 	// The E (up)
-	if(controlSet[69]){
+	if(g_controlSet[69]){
 		g_eyeY -= g_moveSpeed;
 	}
 	// The Q (down)
-	if(controlSet[81]){
+	if(g_controlSet[81]){
 		g_eyeY += g_moveSpeed;
 	}
 	// The W (forward)
-	if(controlSet[87]){
+	if(g_controlSet[87]){
 		g_eyeX += g_moveSpeed * Math.cos(yaw*p180) * Math.sin(pitch*p180)
 		g_eyeY += g_moveSpeed * Math.cos(pitch*p180)
 		g_eyeZ += g_moveSpeed * Math.sin(yaw*p180) * Math.sin(pitch*p180)
 	}
 	// The S (back)
-	if(controlSet[83]){
+	if(g_controlSet[83]){
 		g_eyeX -= g_moveSpeed * Math.cos(yaw*p180) * Math.sin(pitch*p180)
 		g_eyeY -= g_moveSpeed * Math.cos(pitch*p180)
 		g_eyeZ -= g_moveSpeed * Math.sin(yaw*p180) * Math.sin(pitch*p180)
@@ -319,8 +326,8 @@ function draw(highResTimestamp) {
 	g_centerY = g_eyeY + (10 * Math.cos(pitch*p180))
 	g_centerZ = g_eyeZ + (10 * Math.sin(yaw*p180) * Math.sin(pitch*p180))
 	
-	VPMatrix.setPerspective(60.0, 600 / 400, 1.0, 200.0);
-	VPMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ,	g_centerX, 	g_centerY, 	g_centerZ, 0.0, 1.0, 0.0);
+	g_vpMatrix.setPerspective(60.0, g_canvas.width / g_canvas.height, 1.0, 200.0);
+	g_vpMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ,	g_centerX, 	g_centerY, 	g_centerZ, 0.0, 1.0, 0.0);
 	
 	//Read the 3D Array
 	for(var z = 0; z < size; z++)
@@ -331,7 +338,7 @@ function draw(highResTimestamp) {
 			{
 				if(g_currStep[z][y][x] == 1)
 				{
-					drawCube(x, y, z, gl, n, g_cubeBuffer, VPMatrix, a_Position, u_MVPMatrix);
+					drawCube(x, y, z);
 				}
 			}
 		}
@@ -342,25 +349,25 @@ function draw(highResTimestamp) {
 	setEyePos(g_eyeX, g_eyeY, g_eyeZ);
 	setRefPos(g_centerX, g_centerY, g_centerZ);
 	
-	if(highResTimestamp - lastUpdate > updateSpeed) {
+	if(highResTimestamp - g_lastUpdate > g_updateSpeed) {
 		g_currStep = getGameStep();
-		lastUpdate = highResTimestamp;
+		g_lastUpdate = highResTimestamp;
 	}
 }
 
-function drawCube(x, y, z, gl, n, buffer, VPMatrix, a_Position, u_MVPMatrix)
+function drawCube(x, y, z)
 {
-	gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+	g_webGL.bindBuffer(g_webGL.ARRAY_BUFFER, g_cubeBuffer);
 	// Assign the buffer object to the attribute variable
-	gl.vertexAttribPointer(a_Position, buffer.num, buffer.type, false, 0, 0);
+	g_webGL.vertexAttribPointer(g_aPosition, g_cubeBuffer.num, g_cubeBuffer.type, false, 0, 0);
 	// Enable the assignment of the buffer object to the attribute variable
-	gl.enableVertexAttribArray(a_Position);
+	g_webGL.enableVertexAttribArray(g_aPosition);
 	
 	// Calculate the model view project matrix and pass it to u_MVPMatrix
-	g_mvpMatrix.set(VPMatrix);
+	g_mvpMatrix.set(g_vpMatrix);
 	g_mvpMatrix.translate(x * 3, y * 3, z * 3);
-	gl.uniformMatrix4fv(u_MVPMatrix, false, g_mvpMatrix.elements);
+	g_webGL.uniformMatrix4fv(g_uMVPMatrix, false, g_mvpMatrix.elements);
 	
 	// Draw
-	gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+	g_webGL.drawElements(g_webGL.TRIANGLES, g_numIndices, g_webGL.UNSIGNED_BYTE, 0);
 }
