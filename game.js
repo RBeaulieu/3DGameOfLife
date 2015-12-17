@@ -10,17 +10,22 @@ var sSet = {};
 var size = 20;
 var myWorker;
 var isWorking;
-var testBuffer;
 
 function main()
 {	
 	myWorker = new Worker('game-worker.js');
 	myWorker.onmessage = function(event) {
-		
-		lifeBuffer[nextWrite] = {arr: JSON.parse(event.data[0]), chng: JSON.parse(event.data[1])}
-		nextWrite++;
-		nextWrite = nextWrite % bufferLimit;
-		isWorking = false;
+		if(isWorking)
+		{
+			lifeBuffer[nextWrite] = {arr: JSON.parse(event.data[0]), chng: JSON.parse(event.data[1])}
+			nextWrite++;
+			nextWrite = nextWrite % bufferLimit;
+			isWorking = false;
+		}
+		else
+		{
+			console.log('Possible reset issue');
+		}
 	}
 	
 	gameInit();
