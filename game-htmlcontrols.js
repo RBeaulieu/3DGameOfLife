@@ -1,19 +1,19 @@
 function gameStart()
 {
-	disableToL()
+	disableToL();
 	g_isStopped = false;
 	g_lastUpdate = performance.now();
 }
 
 function gameStop()
 {
-	enableToL()
+	enableToL();
 	g_isStopped = true;
 }
 
 function gameReset()
 {
-	enableToL()
+	enableToL();
 	g_isStopped = true;
 	gameInit();
 	g_currStep = lifeBuffer[0].arr;
