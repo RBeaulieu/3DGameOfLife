@@ -1,72 +1,11 @@
 <!DOCTYPE html>
 
-<!-- COLOR PALETTE
-Primary
-	DARK	#171b1f
-	MEDIUM	#1c2126
-	LIGHT	#39424d
-Secondary
-	OUTLINE	#14171b
-	ACCENT	#15202b
-	GREY	#808080
- -->
-
 <html>
 	
 	<head>
 		<meta charset="utf-8" />
 		<title id="myTitle">3D Conway's Game of Life</title>
-		<style type="text/css">
-			<!-- -->
-	      html{
-	      	background-color: #39424d;
-	      }
-	      body{
-	        font-family: "Courier New", "lucida console";
-	        font-weight: bold;
-	       	color: #FFF;
-	       	padding:0;
-	      	padding-left: 70%;
-	        position: fixed;
-	      	width: 30%;
-		    left: 0;
-		    top: 0;
-	      }
-	      canvas{
-	      	padding:0.5%;
-	        width: 69%;
-	        height: auto;
-	        position: fixed;
-	        left: 0;
-	        top: 0;
-	        bottom: 0;
-	        margin: auto;
-	      }
-	      pageBorder{
-			background-color: #171b1f;
-			z-index: -1;
-	      	padding:0;
-	        width: 30%;
-	        height: 100%;
-	        position: fixed;
-	        right: 0;
-	        top: 0;
-	      }
-		  hr{
-			border: 0;
-			border-top: 3px solid #39424d;
-			display: block;
-			margin: 10px 0px 10px 0px;
-			width: 100%;
-		  }
-		  hr2{
-			border: 0;
-			border-top: 1px solid #39424d;
-			display: block;
-			margin: 10px 0px 5px 0px;
-			width: 100%;
-		  }
-		</style>
+		<link rel="stylesheet" type="text/css" href="styles.css">
 		<script src="lib/webgl-utils.js"></script>
 		<script src="lib/webgl-debug.js"></script>
 		<script src="lib/cuon-utils.js"></script>
@@ -111,8 +50,9 @@ Secondary
     	</script>
 	</head>
 	<header id="myHeader">
-		<h2 id="myh1">3D Game of Life</h2>
-		<h5 id="myh5">Created By...<br /><br />Raphael Beaulieu<br />Elliot Coy</h5>
+		<h1 id="myh1">3D Game of Life</h1>
+		<h3 id="myh5">Created By...<br /></h2>
+		<h2 id="myh5">Raphael Beaulieu<br />Elliot Coy</h2>
 	</header>
 
 	<canvas id="myWebGLCanvas" width="900" height="600" style="z-index:0;">Your browser does not support the canvas tag.</canvas>
@@ -133,17 +73,24 @@ Secondary
 			</tr>
 		</table>
 		<hr2></hr2>
-		<table id="myPlayTable" style="width:350px; padding:0px;">
+		<table id="myButtonTable" style="width:350px; padding:0px;">
 			<tr>
 				<td id="myButtons">
-					<tr><button type="btnStart" style="color" onclick="gameStart()">Start</button></tr>
-					<tr><button type="btnStop" style="color" onclick="gameStop()">Stop</button></tr>
-					<tr><button type="btnClear" style="color" onclick="gameReset()">Reset</button></tr>
+					<button type="btnStart" style="color" onclick="gameStart()">Start</button>
+					<button type="btnStop" style="color" onclick="gameStop()">Stop</button>
+					<button type="btnClear" style="color" onclick="gameReset()">Reset</button>
 				</td>
 			</tr>
-			<hr2></hr2>
+		</table>
+		<table id="myPlayTable" style="width:350px; padding:0px;">
 			<tr>
-				<td id="mySpeedRange" style="text-align:left;">Update Speed: <td id="mySpeed" style="text-align:left;"><td><input type="range" min="500" max="5000" value="1000" style="vertical-align:middle;" oninput="setSpeed(this.value)"></td>
+				<hr2></hr2>
+				<tr id="mySpeedRange" style="width:350px; text-align:left;">Update Speed: </tr>
+				<td id="mySpeed" style="text-align:left;">
+					<td>
+						<input type="range" min="500" max="5000" value="1000" style="vertical-align:middle;" oninput="setSpeed(this.value)">
+					</td>
+				</td>
 			</tr>
 		</table>
 		<hr></hr>
