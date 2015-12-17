@@ -171,9 +171,6 @@ function drawInit()
 		return;
 	}
 	
-	// Set initial step update speed
-	setSpeed(1000);
-	
 	// Set sizes of outline representing game area
 	g_outlineSize = size * 3.0 / 2.0;
 	g_outlineOrigin = g_outlineSize - 1.5;
@@ -182,7 +179,7 @@ function drawInit()
 	g_webGL.uniform3f(g_uLightColor, 1.0, 1.0, 1.0);
 	
 	// Set amount and color of ambient light
-	g_webGL.uniform3f(g_uAmbientLight, 0.2, 0.2, 0.2);
+	g_webGL.uniform3f(g_uAmbientLight, 0.3, 0.3, 0.3);
 	
 	// Register the event handler to be called on key press and key release
 	document.onkeydown = function(ev){ keyDown(ev); };
@@ -221,7 +218,7 @@ function initVertexBuffers(g_webGL)
 		1.0,-1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0, 1.0,-1.0,   1.0, 1.0,-1.0   // v4-v7-v6-v5 back
 	]);
 	
-	
+	/*
 	var cubeColors = new Float32Array([    // Colors
 		0.8, 0.8, 0.8,   0.8, 0.8, 0.8,   0.8, 0.8, 0.8,  0.8, 0.8, 0.8,     // v0-v1-v2-v3 front
 		0.8, 0.8, 0.8,   0.8, 0.8, 0.8,   0.8, 0.8, 0.8,  0.8, 0.8, 0.8,     // v0-v3-v4-v5 right
@@ -230,8 +227,9 @@ function initVertexBuffers(g_webGL)
 		0.8, 0.8, 0.8,   0.8, 0.8, 0.8,   0.8, 0.8, 0.8,  0.8, 0.8, 0.8,     // v7-v4-v3-v2 down
 		0.8, 0.8, 0.8,   0.8, 0.8, 0.8,   0.8, 0.8, 0.8,  0.8, 0.8, 0.8　    // v4-v7-v6-v5 back
  	]);
+	*/
 	
-	/*
+	
 	var cubeColors = new Float32Array([     // Colors
 		0.4, 0.4, 1.0,  0.4, 0.4, 1.0,  0.4, 0.4, 1.0,  0.4, 0.4, 1.0,  // v0-v1-v2-v3 front(blue)
 		0.4, 1.0, 0.4,  0.4, 1.0, 0.4,  0.4, 1.0, 0.4,  0.4, 1.0, 0.4,  // v0-v3-v4-v5 right(green)
@@ -240,7 +238,7 @@ function initVertexBuffers(g_webGL)
 		0.2, 0.3, 0.4,  0.2, 0.3, 0.4,  0.2, 0.3, 0.4,  0.2, 0.3, 0.4,  // v7-v4-v3-v2 down
 		0.4, 1.0, 1.0,  0.4, 1.0, 1.0,  0.4, 1.0, 1.0,  0.4, 1.0, 1.0   // v4-v7-v6-v5 back
 	]);
-	*/
+	
 	
 	var cubeNormals = new Float32Array([    // Normal
 		0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,  // v0-v1-v2-v3 front
@@ -476,6 +474,7 @@ function drawLargeCubeOutline()
 
 function drawHUD(pop)
 {
+	// Drawing HUD to screen
 	g_2DCG.clearRect(0, 0, g_hud.width, g_hud.height);
 	g_2DCG.font = '14px "Lucida Console"'
 	g_2DCG.fillStyle = 'rgba(255, 255, 255, 1)';
