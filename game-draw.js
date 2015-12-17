@@ -424,6 +424,7 @@ function drawCube(x, y, z)
 	g_webGL.enableVertexAttribArray(g_aPosition);
 	
 	g_modelMatrix.setTranslate(x * 3, y * 3, z * 3);
+	g_webGL.uniformMatrix4fv(g_uMMatrix, false, g_modelMatrix.elements);
 	
 	// Calculate the model view project matrix and pass it to g_uMVPMatrix
 	g_mvpMatrix.set(g_vpMatrix);
