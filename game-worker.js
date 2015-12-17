@@ -1,8 +1,10 @@
 "use strict";
 
+// COMMENT WHEN POSSIBLE
+
 onmessage = function(event) {
 	var prevStep = JSON.parse(event.data[0]);
-	var currStep = currStep = prevStep.map(function(outerArr) { return outerArr.map(function(innerArr) { return innerArr.slice(); }) });
+	var currStep = prevStep.map(function(outerArr) { return outerArr.map(function(innerArr) { return innerArr.slice(); }) });
 	var prevChangeSet = JSON.parse(event.data[1]);
 	var currChangeSet = {};
 	var bSet = JSON.parse(event.data[2]);
