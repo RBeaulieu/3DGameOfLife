@@ -62,35 +62,45 @@
 	<body onload="main()" width="350" height="600">
 
 		<hr></hr>
-		<table id="myGameTable" style="width:350px; padding:0px;">
+		<table id="myTypeTable" style="width:350px; padding:0px;">
 			<tr>
 				<td id="myTextBoxes">
 					Type of Life: B
-					<input type="text" id="txtBVal" value="3" style="width:70px; vertical-align:middle;background-color:#15202b; color:#FFF;">
-					S
-					<input type="text" id="txtSVal" value="2,3" style="width:70px; vertical-align:bottom;background-color:#15202b; color:#FFF;">	
+					<input type="text" id="txtBVal" value="" style="width:70px; vertical-align:middle;">
+					/S
+					<input type="text" id="txtSVal" value="" style="width:70px; vertical-align:bottom;">	
 				</td>
 		</table>
 		<hr2></hr2>
 		<table id="myButtonTable" style="width:100%; padding:0px;">
 			<tr>
 				<td id="myButtons">
-					<button type="btnStart" style="width:100px;" onclick="gameStart()">Start</button>
-					<button type="btnStop" style="width:100px;" onclick="gameStop()">Stop</button>
-					<button type="btnClear" style="width:100px;" onclick="gameReset()">Reset</button>
+					<button id="btnStart" style="width:100px;" onclick="gameStart()">Start</button>
+					<button id="btnStop" style="width:100px;" onclick="gameStop()">Stop</button>
+					<button id="btnReset" style="width:100px;" onclick="gameReset()">Reset</button>
 				</td>
 			</tr>
 		</table>
-		<table id="myPlayTable" style="width:350px; padding:0px;">
+		<table id="mySpeedTable" style="width:350px; padding:0px;">
 			<tr>
 				<hr2></hr2>
-				<td id="mySpeedRange" style="width:150px; text-align:left;">Update Speed: 
+				<td id="lblSpeedTitle" style="width:150px; text-align:left;">Update Speed: 
 				</td>
-				<td id="mySpeed" style="text-align:left;">	
+				<td id="lblSpeed" style="text-align:left;">	
 				</td>
 			</tr>
 			<table>
-				<input type="range" min="500" max="5000" value="1000" style="width:350px; vertical-align:middle;" oninput="setSpeed(this.value)">
+				<input id="rngSpeed" type="range" min="500" max="5000" value="" style="width:350px; vertical-align:middle;" oninput="setSpeed(this.value)">
+			</table>
+		</table>
+		<hr></hr>
+		<table>
+			<td>X:&nbsp;<input type="text" id="txtXVal" value="" style="width:40px; "></td>
+			<td>&nbsp;Y:&nbsp;<input type="text" id="txtYVal" value="" style="width:40px; "></td>
+			<td>&nbsp;Z:&nbsp;<input type="text" id="txtZVal" value="" style="width:40px; "></td>
+			<table>
+				<br style="display:block; margin:4px;">
+				<button id="btnModify" style="width:252px; height:25px; font-size:16px;" onclick="modifyLocation()">Add/Remove Cube</button>
 			</table>
 		</table>
 		<hr></hr>
