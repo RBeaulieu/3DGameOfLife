@@ -66,18 +66,17 @@
 			<tr>
 				<td id="myTextBoxes">
 					Type of Life: B
-					<input type="text" id="txtBVal" value="3" style="width:50px;">
-					/S
-					<input type="text" id="txtSVal" value="2,3" style="width:50px;">
+					<input type="text" id="txtBVal" value="3" style="width:70px; vertical-align:middle;background-color:#15202b; color:#FFF;">
+					S
+					<input type="text" id="txtSVal" value="2,3" style="width:70px; vertical-align:bottom;background-color:#15202b; color:#FFF;">	
 				</td>
-			</tr>
 		</table>
 		<hr2></hr2>
 		<table id="myButtonTable" style="width:350px; padding:0px;">
 			<tr>
 				<td id="myButtons">
-					<button type="btnStart" style="color" onclick="gameStart()">Start</button>
-					<button type="btnStop" style="color" onclick="gameStop()">Stop</button>
+					<button type="btnStart" style="color" onclick="gameStart()">Start</button><br />
+					<button type="btnStop" style="color" onclick="gameStop()">Stop</button><br />
 					<button type="btnClear" style="color" onclick="gameReset()">Reset</button>
 				</td>
 			</tr>
@@ -85,14 +84,29 @@
 		<table id="myPlayTable" style="width:350px; padding:0px;">
 			<tr>
 				<hr2></hr2>
-				<tr id="mySpeedRange" style="width:350px; text-align:left;">Update Speed: </tr>
-				<td id="mySpeed" style="text-align:left;">
-					<td>
-						<input type="range" min="500" max="5000" value="1000" style="vertical-align:middle;" oninput="setSpeed(this.value)">
-					</td>
+				<td id="mySpeedRange" style="width:150px; text-align:left;">Update Speed: 
+				</td>
+				<td id="mySpeed" style="text-align:left;">	
 				</td>
 			</tr>
+			<table>
+				<input type="range" min="500" max="5000" value="1000" style="width:350px; vertical-align:middle;" oninput="setSpeed(this.value)">
+			</table>
 		</table>
 		<hr></hr>
+		<h4>Controls</h4>
+		<h3>
+					Q.......Elevate
+			<br />	E.......Descend
+			<br />	A.......Strafe Left
+			<br />	D.......Strafe Right
+			<br />	W.......Move Towards Look-At
+			<br />	S.......Move Away From Look-At
+			<br />	UP......Look Up
+			<br />	DOWN....Look Down
+			<br />	LEFT....Look Left
+			<br />	RIGHT...Look Right
+			<br />	SPACE...Lock-On To Center
+		</h3>
 	</body>
 </html>
