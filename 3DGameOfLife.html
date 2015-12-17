@@ -66,9 +66,9 @@
 			<tr>
 				<td id="myTextBoxes">
 					Type of Life: B
-					<input type="text" id="txtBVal" value="" style="width:70px; vertical-align:middle;background-color:#15202b;color:#FFF;">
+					<input type="text" id="txtBVal" value="" style="width:70px; vertical-align:middle;">
 					/S
-					<input type="text" id="txtSVal" value="" style="width:70px; vertical-align:bottom;background-color:#15202b;color:#FFF;">	
+					<input type="text" id="txtSVal" value="" style="width:70px; vertical-align:bottom;">	
 				</td>
 		</table>
 		<hr2></hr2>
@@ -95,25 +95,13 @@
 		</table>
 		<hr></hr>
 		<table>
-			<tr>
-				<td>
-					<table>
-						<tr>
-							<td>X:</td>
-							<td>Y:</td>
-							<td>Z:</td>
-						</tr>
-						<tr>
-							<td><input type="text" id="txtXVal" value="" style="width:70px; vertical-align:bottom;background-color:#15202b;color:#FFF;"></td>
-							<td><input type="text" id="txtYVal" value="" style="width:70px; vertical-align:bottom;background-color:#15202b;color:#FFF;"></td>
-							<td><input type="text" id="txtZVal" value="" style="width:70px; vertical-align:bottom;background-color:#15202b;color:#FFF;"></td>
-						</tr>
-					</table>
-				</td>
-				<td>
-					<button id="btnModify" style="width:100px;" onclick="modifyLocation()">Add/Remove Cube</button>
-				</td>
-			</tr>
+			<td>X:&nbsp;<input type="text" id="txtXVal" value="" style="width:40px; "></td>
+			<td>&nbsp;Y:&nbsp;<input type="text" id="txtYVal" value="" style="width:40px; "></td>
+			<td>&nbsp;Z:&nbsp;<input type="text" id="txtZVal" value="" style="width:40px; "></td>
+			<table>
+				<br style="display:block; margin:4px;">
+				<button id="btnModify" style="width:252px; height:25px; font-size:16px;" onclick="modifyLocation()">Add/Remove Cube</button>
+			</table>
 		</table>
 		<hr></hr>
 		<h4>Controls</h4>

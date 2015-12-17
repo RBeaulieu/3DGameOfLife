@@ -74,7 +74,32 @@ button{
 	width:145px;
 	background-color: #15202b;
 }
-input{
+button:disabled{
+	color: #808080;
+	text-align: center;
+	font-weight: normal;
+	font-size: 18px;
+	height:45px; 
+	width:145px;
+	background-color: #1c2126;
+}
+input[type=text]{
+	color: #FFF;
+	background-color: #15202b;
+	text-align: center;
+	font-size: 16px;
+	height:25px;
+}
+input[type=text]:disabled{
+	color: #808080;
+	background-color: #1c2126;
+	text-align: center;
+	font-size: 16px;
+	height:25px;
+}
+input[type=text]:focus{
+	color: #1aF;
+	background-color: #15202b;
 	text-align: center;
 	font-size: 16px;
 	height:25px;
@@ -205,6 +230,3 @@ input[type=range]:focus::-ms-fill-lower {
 input[type=range]:focus::-ms-fill-upper {
   background: #367ebd;
 }
-
-
-
