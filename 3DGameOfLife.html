@@ -76,15 +76,28 @@ Secondary
 		<script src="game.js"></script>
 		<script id="shader-vs" type="x-shader/x-vertex">
 			attribute vec4 a_Position;
+			attribute vec4 a_Normal;
 			attribute vec4 a_Color;
 			
+			uniform mat4 u_MMatrix;
 			uniform mat4 u_MVPMatrix;
+			uniform mat4 u_NormalMatrix;
+			uniform vec3 u_LightColor;
+			uniform vec3 u_LightPosition;
+			uniform vec3 u_AmbientLight;
 			
 			varying vec4 v_Color;
 			
 			void main() {
 				gl_Position = u_MVPMatrix * a_Position;
-				v_Color = a_Color;
+				
+				vec3 normal = normalize((u_NormalMatrix * a_Normal).xyz);
+				vec4 vertexPosition = u_MMatrix * a_Position;
+				vec3 lightDirection = normalize(u_LightPosition - vec3(vertexPosition));
+				float nDotL = max(dot(lightDirection, normal), 0.0);
+				vec3 diffuse = u_LightColor * a_Color.rgb * nDotL;
+				vec3 ambient = u_AmbientLight * a_Color.rgb;
+				v_Color = vec4(diffuse + ambient, a_Color.a);
 			}
 		</script>
 		<script id="shader-fs" type="x-shader/x-fragment">
@@ -114,14 +127,12 @@ Secondary
 				<td id="myButtons">
 					<tr><button type="btnStart" style="color" onclick="gameStart()">Start</button></tr>
 					<tr><button type="btnStop" style="color" onclick="gameStop()">Stop</button></tr>
-					<tr><button type="btnClear" style="color" onclick="gameClear()">Clear</button></tr>
+					<tr><button type="btnClear" style="color" onclick="gameReset()">Reset</button></tr>
 				</td>
 			</tr>
 			<hr2></hr2>
 			<tr>
-				<td id="mySpeedRange" style="text-align:left;">Speed: <td id="mySpeed" style="text-align:left;">1<td><input type="range" min="1" max="100" value="1" style="vertical-align:middle;" oninput="setSpeed(this.value)"></td>
-
-				
+				<td id="mySpeedRange" style="text-align:left;">Update Speed: <td id="mySpeed" style="text-align:left;"><td><input type="range" min="500" max="5000" value="1000" style="vertical-align:middle;" oninput="setSpeed(this.value)"></td>
 			</tr>
 		</table>
 		<hr2></hr2>

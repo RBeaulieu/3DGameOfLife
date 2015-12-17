@@ -9,10 +9,14 @@ var g_webGL;
 
 // Draw locations
 var g_currStep = [];
+// Current step
+var g_stepCounter
 // Update step speed
-var g_updateSpeed = 1000;
+var g_updateSpeed;
 // Last update time
 var g_lastUpdate;
+// Game stopped boolean
+var g_isStopped;
 
 // Cube buffer that stores the vertices for the cube
 var g_cubeBuffer = null;
@@ -20,14 +24,26 @@ var g_cubeBuffer = null;
 var g_numIndices;
 // Storage location of a_Position
 var g_aPosition;
+// Storage location of u_MMatrix
+var g_uMMatrix;
 // Storage location of u_MVPMatrix
 var g_uMVPMatrix;
 // Storage location of u_NormalMatrix
 var g_uNormalMatrix;
+// Storage location of u_LightColor
+var g_uLightColor;
+// Storage location of u_LightDirection
+var g_uLightPosition;
+// Storage location of u_AmbientLight
+var g_uAmbientLight;
+// Model transformation matrix
+var g_modelMatrix = new Matrix4();
 // Model-View transformation matrix
 var g_vpMatrix = new Matrix4();
 // Model-View-Project transformation matrix
 var g_mvpMatrix = new Matrix4();
+// Normal matrix
+var g_normalMatrix = new Matrix4();
 // Size of outline
 var g_outlineSize;
 // Origin of outline
@@ -62,8 +78,9 @@ function testCubes()
 			
 			for(var x = 0; x < size; x ++)
 			{
-				if(z == 0 || y == 0 || x == 0) { g_currStep[z][y][x] = 1; }
-				else { g_currStep[z][y][x] = 0; }
+				if(z == 10 || y == 10 || x == 10) { g_currStep[z][y][x] = 1; }
+				else if(z == 9 || y == 9 || x == 9) { g_currStep[z][y][x] = 1; }
+				else { g_currStep[z][y][x] = 1; }
 			}
 		}
 	}
@@ -72,15 +89,19 @@ function testCubes()
 function drawInit()
 {
 	// Set up test cube array (comment out if using game)
-	//testCubes();
-	g_currStep = lifeBuffer[0].arr;
+	testCubes();
+	//g_currStep = lifeBuffer[0].arr;
+	g_isStopped = true;
 	g_lastUpdate = 0;
+	g_stepCounter = 0;
 	
 	// Retrieve <canvas> element
 	g_canvas = document.getElementById('myWebGLCanvas');
 	
 	// Get the rendering context for WebGL
 	g_webGL = getWebGLContext(g_canvas);
+	// Use this version for better performance (no debug errors)
+	//g_webGL = getWebGLContext(g_canvas, false);
 	if (!g_webGL) {
 		console.log('*** Error: Failed to get the rendering context for WebGL');
 		return;
@@ -113,16 +134,29 @@ function drawInit()
 	
 	// Get the storage locations of attribute and uniform variables
 	g_aPosition = g_webGL.getAttribLocation(g_webGL.program, 'a_Position');
+	g_uMMatrix = g_webGL.getUniformLocation(g_webGL.program, 'u_MMatrix');
 	g_uMVPMatrix = g_webGL.getUniformLocation(g_webGL.program, 'u_MVPMatrix');
-	// var g_uNormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
-	// if (g_aPosition < 0 || !g_uMVPMatrix || !g_uNormalMatrix) {
-	if (g_aPosition < 0 || !g_uMVPMatrix) {
+	g_uNormalMatrix = g_webGL.getUniformLocation(g_webGL.program, 'u_NormalMatrix');
+	g_uLightColor = g_webGL.getUniformLocation(g_webGL.program, 'u_LightColor');
+	g_uLightPosition = g_webGL.getUniformLocation(g_webGL.program, 'u_LightPosition');
+	g_uAmbientLight = g_webGL.getUniformLocation(g_webGL.program, 'u_AmbientLight');
+	if (g_aPosition < 0 || !g_uMMatrix || !g_uMVPMatrix || !g_uNormalMatrix || !g_uLightColor || !g_uLightPosition || !g_uAmbientLight) {
 		console.log('*** Error: Failed to get the storage location of attribute or uniform variable');
 		return;
 	}
 	
+	// Set initial step update speed
+	setSpeed(1000);
+	
+	// Set sizes of outline representing game area
 	g_outlineSize = size * 3.0 / 2.0;
 	g_outlineOrigin = g_outlineSize - 1.5;
+	
+	// Set point light color
+	g_webGL.uniform3f(g_uLightColor, 1.0, 1.0, 1.0);
+	
+	// Set amount and color of ambient light
+	g_webGL.uniform3f(g_uAmbientLight, 0.2, 0.2, 0.2);
 	
 	// Register the event handler to be called on key press and key release
 	document.onkeydown = function(ev){ keyDown(ev); };
@@ -161,6 +195,17 @@ function initVertexBuffers(g_webGL)
 		1.0,-1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0, 1.0,-1.0,   1.0, 1.0,-1.0   // v4-v7-v6-v5 back
 	]);
 	
+	
+	var cubeColors = new Float32Array([    // Colors
+		1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v1-v2-v3 front
+		1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v3-v4-v5 right
+		1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v5-v6-v1 up
+		1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v1-v6-v7-v2 left
+		1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v7-v4-v3-v2 down
+		1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0　    // v4-v7-v6-v5 back
+ 	]);
+	
+	/*
 	var cubeColors = new Float32Array([     // Colors
 		0.4, 0.4, 1.0,  0.4, 0.4, 1.0,  0.4, 0.4, 1.0,  0.4, 0.4, 1.0,  // v0-v1-v2-v3 front(blue)
 		0.4, 1.0, 0.4,  0.4, 1.0, 0.4,  0.4, 1.0, 0.4,  0.4, 1.0, 0.4,  // v0-v3-v4-v5 right(green)
@@ -168,6 +213,16 @@ function initVertexBuffers(g_webGL)
 		1.0, 1.0, 0.4,  1.0, 1.0, 0.4,  1.0, 1.0, 0.4,  1.0, 1.0, 0.4,  // v1-v6-v7-v2 left
 		0.2, 0.3, 0.4,  0.2, 0.3, 0.4,  0.2, 0.3, 0.4,  0.2, 0.3, 0.4,  // v7-v4-v3-v2 down
 		0.4, 1.0, 1.0,  0.4, 1.0, 1.0,  0.4, 1.0, 1.0,  0.4, 1.0, 1.0   // v4-v7-v6-v5 back
+	]);
+	*/
+	
+	var cubeNormals = new Float32Array([    // Normal
+		0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,  // v0-v1-v2-v3 front
+		1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,  // v0-v3-v4-v5 right
+		0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,  // v0-v5-v6-v1 up
+		-1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  // v1-v6-v7-v2 left
+		0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,  // v7-v4-v3-v2 down
+		0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0   // v4-v7-v6-v5 back
 	]);
 	
 	var cubeIndices = new Uint8Array([       // Indices of the vertices
@@ -183,7 +238,7 @@ function initVertexBuffers(g_webGL)
 	g_cubeBuffer = initArrayBufferForLaterUse(g_webGL, cubeVertices, 3, g_webGL.FLOAT);
 	
 	if (!initArrayBuffer(g_webGL, 'a_Color', cubeColors, 3, g_webGL.FLOAT)) { return -1; }
-	//if (!initArrayBuffer(g_webGL, 'a_Normal', cubeNormals, 3, g_webGL.FLOAT)) { return -1; }
+	if (!initArrayBuffer(g_webGL, 'a_Normal', cubeNormals, 3, g_webGL.FLOAT)) { return -1; }
 	
 	// Write the indices to the buffer object
 	var indexBuffer = g_webGL.createBuffer();
@@ -310,15 +365,19 @@ function moveCamera(){
 }
 
 function draw(highResTimestamp) {
+	var pop = 0;
+	
 	requestAnimationFrame(draw);
 	
 	moveCamera();
 	
 	// Clear color and depth buffer
 	g_webGL.clear(g_webGL.COLOR_BUFFER_BIT | g_webGL.DEPTH_BUFFER_BIT);
+	
+	g_webGL.uniform3f(g_uLightPosition, g_centerX, g_centerY, g_centerZ)
 
 	g_vpMatrix.setPerspective(70.0, g_canvas.width / g_canvas.height, 1.0, 200.0);
-	g_vpMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ,	g_centerX, 	g_centerY, 	g_centerZ, 0.0, 1.0, 0.0);
+	g_vpMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ, g_centerX, g_centerY, g_centerZ, 0.0, 1.0, 0.0);
 	
 	drawLargeCubeOutline();
 	
@@ -332,17 +391,21 @@ function draw(highResTimestamp) {
 				if(g_currStep[z][y][x] == 1)
 				{
 					drawCube(x, y, z);
+					pop++;
 				}
 			}
 		}
 	}
 
+	setStep(g_stepCounter);
+	setPopulation(pop);
 	setEyePos(g_eyeX, g_eyeY, g_eyeZ);
 	setRefPos(g_centerX, g_centerY, g_centerZ);
 
-	if(highResTimestamp - g_lastUpdate > g_updateSpeed) {
+	if(!g_isStopped && highResTimestamp - g_lastUpdate > g_updateSpeed) {
 		g_currStep = getGameStep();
 		g_lastUpdate = highResTimestamp;
+		g_stepCounter++;
 	}
 }
 
@@ -354,10 +417,17 @@ function drawCube(x, y, z)
 	// Enable the assignment of the buffer object to the attribute variable
 	g_webGL.enableVertexAttribArray(g_aPosition);
 	
-	// Calculate the model view project matrix and pass it to u_MVPMatrix
+	g_modelMatrix.setTranslate(x * 3, y * 3, z * 3);
+	
+	// Calculate the model view project matrix and pass it to g_uMVPMatrix
 	g_mvpMatrix.set(g_vpMatrix);
-	g_mvpMatrix.translate(x * 3, y * 3, z * 3);
+	//g_mvpMatrix.translate(x * 3, y * 3, z * 3);
+	g_mvpMatrix.multiply(g_modelMatrix);
 	g_webGL.uniformMatrix4fv(g_uMVPMatrix, false, g_mvpMatrix.elements);
+	// Calculate matrix for normal and pass it to g_uNormalMatrix
+	g_normalMatrix.setInverseOf(g_modelMatrix);
+	g_normalMatrix.transpose();
+	g_webGL.uniformMatrix4fv(g_uNormalMatrix, false, g_normalMatrix.elements);
 	
 	// Draw
 	g_webGL.drawElements(g_webGL.TRIANGLES, g_numIndices, g_webGL.UNSIGNED_BYTE, 0);

@@ -1,21 +1,27 @@
 function gameStart()
 {
-	disableToL();
+	g_isStopped = false;
+	g_lastUpdate = performance.now();
 }
 
 function gameStop()
 {
-	enableToL();
+	g_isStopped = true;
 }
 
-function gameClear()
+function gameReset()
 {
-	gameStop();
+	g_isStopped = true;
+	gameInit();
+	g_currStep = lifeBuffer[0].arr;
+	g_lastUpdate = 0;
+	g_stepCounter = 0;
 }
 
 function setSpeed(newVal)
 {
-	document.getElementById('mySpeed').innerHTML = newVal;
+	g_updateSpeed = newVal;
+	document.getElementById('mySpeed').innerHTML = newVal + 'ms';
 }
 
 function enableToL()
