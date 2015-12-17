@@ -115,13 +115,24 @@ Secondary
 		<h5 id="myh5">Created By...<br /><br />Raphael Beaulieu<br />Elliot Coy</h5>
 	</header>
 
-	<canvas id="myWebGLCanvas" width="900" height="600">Your browser does not support the canvas tag.</canvas>
+	<canvas id="myWebGLCanvas" width="900" height="600" style="z-index:0;">Your browser does not support the canvas tag.</canvas>
+	<canvas id="myHUDCanvas" width="900" height="600" style="z-index:1;">Your browser does not support the canvas tag.</canvas>
 	<pageBorder width="300" height="600"></pageBorder>
 
 	<body onload="main()" width="350" height="600">
 
 		<hr></hr>
-
+		<table id="myGameTable" style="width:350px; padding:0px;">
+			<tr>
+				<td id="myTextBoxes">
+					Type of Life: B
+					<input type="text" id="txtBVal" value="3" style="width:50px;">
+					/S
+					<input type="text" id="txtSVal" value="2,3" style="width:50px;">
+				</td>
+			</tr>
+		</table>
+		<hr2></hr2>
 		<table id="myPlayTable" style="width:350px; padding:0px;">
 			<tr>
 				<td id="myButtons">
@@ -133,57 +144,6 @@ Secondary
 			<hr2></hr2>
 			<tr>
 				<td id="mySpeedRange" style="text-align:left;">Update Speed: <td id="mySpeed" style="text-align:left;"><td><input type="range" min="500" max="5000" value="1000" style="vertical-align:middle;" oninput="setSpeed(this.value)"></td>
-			</tr>
-		</table>
-		<hr2></hr2>
-		<table id="myGameTable" style="width:350px; padding:0px;">
-			<tr>
-				<td id="myTextBoxes">
-					Type of Life: B
-					<input type="text" id="txtBVal" value="3" style="width:50px;">
-					/S
-					<input type="text" id="txtSVal" value="2,3" style="width:50px;">
-				</td>
-			</tr>
-		</table>
-		<hr></hr>
-		<table id="mySatusTable" style="width:250px; padding:0px;">
-			<tr>
-				<td id="myStepTitle" style="text-align:left; width:60px;">Current Step:</td>
-				<td id="myStep" style="text-align:left; width:60px;">n/a</td>
-			</tr>
-			<tr>
-				<td id="myPopTitle" style="text-align:left; width:60px;">Population:</td>
-				<td id="myPop" style="text-align:left; width:60px;">n/a</td>
-			</tr>
-		</table>
-		<hr2></hr2>
-		<table id="CamCoordTableTitle" style="width:350px; padding:0px; padding-top:15px; padding-bottom:0px;">
-			<tr>
-				<td id="myCamTitle" style="width:200px;">Camera Coords:</td>
-			</tr>
-		<table id="CamCoordTable" style="width:200px;">
-			<tr>
-				<td style="width:50px;text-align:left;">(</td>
-				<td id="myCamX" style="width:50px;text-align:right;">0</td><td>,</td>
-				<td id="myCamY" style="width:50px;text-align:right;">0</td><td>,</td>
-				<td id="myCamZ" style="width:50px;text-align:right;">0</td>
-				<td style="padding-right:1px;">)</td>
-			</tr>
-		</table>
-		<hr2></hr2>
-		<table id="LookCoordTableTitle" style="width:350px; padding:0px; padding-top:20px; padding-bottom:0px;">
-			<tr>
-				<td id="myLookTitle" style="width:200px;">Look At Coords:</td>
-			</tr>
-		</table>
-		<table id="LookCoordTable" style="width:200px; padding:0px;">
-			<tr>	
-				<td>(</td>
-				<td id="myLookX" style="width:50px;text-align:right;">0</td><td>,</td>
-				<td id="myLookY" style="width:50px;text-align:right;">0</td><td>,</td>
-				<td id="myLookZ" style="width:50px;text-align:right;">0</td>
-				<td style="text-align:right;width:1px;">)</td>
 			</tr>
 		</table>
 		<hr></hr>

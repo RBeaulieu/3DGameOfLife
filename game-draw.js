@@ -4,13 +4,19 @@ var VSHADER_SOURCE = null;
 var FSHADER_SOURCE = null;
 // Instance of canvas
 var g_canvas;
+// Instance of HUD
+var g_hud;
 // Instance of WebGL context
 var g_webGL;
+// Instance of 2DCG
+var g_2DCG;
 
 // Draw locations
 var g_currStep = [];
 // Current step
-var g_stepCounter
+var g_stepCounter;
+// Population of current step
+var g_population;
 // Update step speed
 var g_updateSpeed;
 // Last update time
@@ -89,23 +95,27 @@ function testCubes()
 function drawInit()
 {
 	// Set up test cube array (comment out if using game)
-	testCubes();
-	//g_currStep = lifeBuffer[0].arr;
+	//testCubes();
+	g_currStep = lifeBuffer[0].arr;
 	g_isStopped = true;
 	g_lastUpdate = 0;
 	g_stepCounter = 0;
 	
-	// Retrieve <canvas> element
+	// Retrieve <canvas> elements
 	g_canvas = document.getElementById('myWebGLCanvas');
+	g_hud = document.getElementById('myHUDCanvas');
 	
 	// Get the rendering context for WebGL
-	g_webGL = getWebGLContext(g_canvas);
+	//g_webGL = getWebGLContext(g_canvas);
 	// Use this version for better performance (no debug errors)
-	//g_webGL = getWebGLContext(g_canvas, false);
+	g_webGL = getWebGLContext(g_canvas, false);
 	if (!g_webGL) {
 		console.log('*** Error: Failed to get the rendering context for WebGL');
 		return;
 	}
+	
+	// Get the rendering context for 2DCG
+	g_2DCG = g_hud.getContext('2d');
 	
 	// Retrieve vertex shader and fragment shader from HTML page
 	getShader(g_webGL, 'shader-vs');
@@ -365,8 +375,6 @@ function moveCamera(){
 }
 
 function draw(highResTimestamp) {
-	var pop = 0;
-	
 	requestAnimationFrame(draw);
 	
 	moveCamera();
@@ -374,13 +382,14 @@ function draw(highResTimestamp) {
 	// Clear color and depth buffer
 	g_webGL.clear(g_webGL.COLOR_BUFFER_BIT | g_webGL.DEPTH_BUFFER_BIT);
 	
-	g_webGL.uniform3f(g_uLightPosition, g_centerX, g_centerY, g_centerZ)
+	g_webGL.uniform3f(g_uLightPosition, g_eyeX, g_eyeY, g_eyeZ)
 
 	g_vpMatrix.setPerspective(70.0, g_canvas.width / g_canvas.height, 1.0, 200.0);
 	g_vpMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ, g_centerX, g_centerY, g_centerZ, 0.0, 1.0, 0.0);
 	
 	drawLargeCubeOutline();
 	
+	g_population = 0;
 	//Read the 3D Array
 	for(var z = 0; z < size; z++)
 	{
@@ -391,16 +400,13 @@ function draw(highResTimestamp) {
 				if(g_currStep[z][y][x] == 1)
 				{
 					drawCube(x, y, z);
-					pop++;
+					g_population++;
 				}
 			}
 		}
 	}
 
-	setStep(g_stepCounter);
-	setPopulation(pop);
-	setEyePos(g_eyeX, g_eyeY, g_eyeZ);
-	setRefPos(g_centerX, g_centerY, g_centerZ);
+	drawHUD();
 
 	if(!g_isStopped && highResTimestamp - g_lastUpdate > g_updateSpeed) {
 		g_currStep = getGameStep();
@@ -449,4 +455,15 @@ function drawLargeCubeOutline()
 	
 	// Draw
 	g_webGL.drawElements(g_webGL.LINES, g_numIndices, g_webGL.UNSIGNED_BYTE, 0);
+}
+
+function drawHUD(pop)
+{
+	g_2DCG.clearRect(0, 0, g_hud.width, g_hud.height);
+	g_2DCG.font = '14px "Lucida Console"'
+	g_2DCG.fillStyle = 'rgba(255, 255, 255, 1)';
+	g_2DCG.fillText('Current Step: ' + g_stepCounter, 3, 15);
+	g_2DCG.fillText('Population: ' + g_population, 3, 35);
+	g_2DCG.fillText('Camera Coords: (' + g_eyeX.toFixed(1) + ', ' + g_eyeY.toFixed(1) + ', ' + g_eyeZ.toFixed(1) + ')', 3, 575);
+	g_2DCG.fillText('Look At Coords: (' + g_centerX.toFixed(1) + ', ' + g_centerY.toFixed(1) + ', ' + g_centerZ.toFixed(1) + ')', 3, 595);
 }
