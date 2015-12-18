@@ -365,13 +365,13 @@ function moveCamera(){
 	// The Space Bar: Lock on to Center of Cube Array
 	if(g_controlSet[32]){
 		//Delta's of eye(x,y,z) and origin(x,y,z)
-		dX = g_eyeX-g_outlineOrigin;
-		dY = g_eyeY-g_outlineOrigin;
-		dZ = g_eyeZ-g_outlineOrigin;
+		g_dX = g_eyeX-g_outlineOrigin;
+		g_dY = g_eyeY-g_outlineOrigin;
+		g_dZ = g_eyeZ-g_outlineOrigin;
 		//Verticle angle, rotate around XZ plane
-		g_pitch = -Math.atan2( dY, Math.sqrt(dZ*dZ + dX*dX))/g_pi180 - 90.0;
+		g_pitch = -Math.atan2(g_dY, Math.sqrt(g_dZ*g_dZ + g_dX*g_dX))/g_pi180 - 90.0;
 		//Horizontal angle, rotate around Y axis
-		g_yaw = Math.atan2(dZ, dX)/g_pi180;
+		g_yaw = Math.atan2(g_dZ, g_dX)/g_pi180;
 	}
 	else{
 		// The Left Arrow: Look Left
