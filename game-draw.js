@@ -60,7 +60,7 @@ var g_controlSet = [];
 // Movement speed
 var g_moveSpeed = 0.5;
 // Look speed
-var g_lookSpeed = 2;
+var g_lookSpeed = 1.5;
 // Eye coordinates
 var g_eyeX = 30.0, g_eyeY = 31.5, g_eyeZ = 60.0;
 // Reference coordinates
@@ -70,7 +70,11 @@ var g_yaw = 90;
 // angle of the yz plane
 var g_pitch = -90;
 // for multiplication, turning degrees into radians
-var g_pi180 = Math.PI/180
+var g_pi180 = Math.PI/180;
+// Delta's for Look-At Calculation (spacebar controls)
+var g_dX;
+var g_dY;
+var g_dZ;
 
 function testCubes()
 {
@@ -172,7 +176,7 @@ function drawInit()
 	}
 	
 	// Set sizes of outline representing game area
-	g_outlineSize = size * 3.0 / 2.0;
+	g_outlineSize = size * 3.0 / 2.0; 
 	g_outlineOrigin = g_outlineSize - 1.5;
 	
 	// Set point light color
@@ -326,65 +330,78 @@ function keyDown(ev){ g_controlSet[ev.keyCode] = 1; }
 function keyUp(ev){ g_controlSet[ev.keyCode] = 0; }
 
 function moveCamera(){
-	// The left
-	if(g_controlSet[37]){
-		g_yaw -= g_lookSpeed;
-	}	
-	// The right
-	if(g_controlSet[39]){
-		g_yaw += g_lookSpeed;
-	}	
-	// The up
-	if(g_controlSet[38]){
-		if(g_pitch + g_lookSpeed <= -10){
-			g_pitch += g_lookSpeed;
-		}
-	}	
-	// The downs
-	if(g_controlSet[40]){
-		if(g_pitch - g_lookSpeed >= -176){
-			g_pitch -= g_lookSpeed;
-		}
-	}	
 
-	g_centerX = g_eyeX + (10 * Math.cos(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180))
-	g_centerY = g_eyeY + (10 * Math.cos(g_pitch*g_pi180))
-	g_centerZ = g_eyeZ + (10 * Math.sin(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180))
-
-	// The A (left)
+	// The A Key: Strafe Left (Perpendicular of up vector)
 	if(g_controlSet[65]){
 		g_eyeX -= Math.sin(g_yaw*g_pi180) * g_moveSpeed;
 		g_eyeZ += Math.cos(g_yaw*g_pi180) * g_moveSpeed;
 	}
-	// The D (right)
+	// The D: Strafe Right (Perpendicular of up vector)
 	if(g_controlSet[68]){
 		g_eyeX += Math.sin(g_yaw*g_pi180) * g_moveSpeed;
 		g_eyeZ -= Math.cos(g_yaw*g_pi180) * g_moveSpeed;
 	}
-	// The E (up)
+	// The E: Descend (Down the Y Axis)
 	if(g_controlSet[69]){
 		g_eyeY -= g_moveSpeed;
 	}
-	// The Q (down)
+	// The Q: Ascend (Up the Y Axis)
 	if(g_controlSet[81]){
 		g_eyeY += g_moveSpeed;
 	}
-	// The W (forward)
+	// The W: Move Towards Look-At
 	if(g_controlSet[87]){
-		g_eyeX += g_moveSpeed * Math.cos(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180)
-		g_eyeY += g_moveSpeed * Math.cos(g_pitch*g_pi180)
-		g_eyeZ += g_moveSpeed * Math.sin(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180)
+		g_eyeX += g_moveSpeed * Math.cos(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180);
+		g_eyeY += g_moveSpeed * Math.cos(g_pitch*g_pi180);
+		g_eyeZ += g_moveSpeed * Math.sin(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180);
 	}
-	// The S (back)
+	// The S: Move Away From Look-At
 	if(g_controlSet[83]){
-		g_eyeX -= g_moveSpeed * Math.cos(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180)
-		g_eyeY -= g_moveSpeed * Math.cos(g_pitch*g_pi180)
-		g_eyeZ -= g_moveSpeed * Math.sin(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180)
+		g_eyeX -= g_moveSpeed * Math.cos(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180);
+		g_eyeY -= g_moveSpeed * Math.cos(g_pitch*g_pi180);
+		g_eyeZ -= g_moveSpeed * Math.sin(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180);
 	}
 
-	g_centerX = g_eyeX + (10 * Math.cos(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180))
-	g_centerY = g_eyeY + (10 * Math.cos(g_pitch*g_pi180))
-	g_centerZ = g_eyeZ + (10 * Math.sin(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180))
+	// The Space Bar: Lock on to Center of Cube Array
+	if(g_controlSet[32]){
+		//Delta's of eye(x,y,z) and origin(x,y,z)
+		dX = g_eyeX-g_outlineOrigin;
+		dY = g_eyeY-g_outlineOrigin;
+		dZ = g_eyeZ-g_outlineOrigin;
+		//Verticle angle, rotate around XZ plane
+		g_pitch = -Math.atan2( dY, Math.sqrt(dZ*dZ + dX*dX))/g_pi180 - 90.0;
+		//Horizontal angle, rotate around Y axis
+		g_yaw = Math.atan2(dZ, dX)/g_pi180;
+	}
+	else{
+		// The Left Arrow: Look Left
+		if(g_controlSet[37]){
+			g_yaw -= g_lookSpeed;
+		}	
+		// The Right Arrow: Look Right
+		if(g_controlSet[39]){
+			g_yaw += g_lookSpeed;
+		}	
+		// The Up Arrow: Look Up
+		if(g_controlSet[38]){
+			if(g_pitch + g_lookSpeed <= -10){
+				g_pitch += g_lookSpeed;
+			}
+		}	
+		// The Down Arrow: Look Down
+		if(g_controlSet[40]){
+			if(g_pitch - g_lookSpeed >= -176){
+				g_pitch -= g_lookSpeed;
+			}
+		}	
+	}
+
+	//Set the Look-At Point
+	//Based on pitch and yaw
+	//Radius of 1 from the Eye-Point
+	g_centerX = g_eyeX + (Math.cos(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180));
+	g_centerY = g_eyeY + (Math.cos(g_pitch*g_pi180));
+	g_centerZ = g_eyeZ + (Math.sin(g_yaw*g_pi180) * Math.sin(g_pitch*g_pi180));
 	
 }
 
