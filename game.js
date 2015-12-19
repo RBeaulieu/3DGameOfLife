@@ -21,6 +21,7 @@ var bufferLimit = 10;
 
 var bSet;
 var sSet;
+var preset = 1;
 var checkAllChangeSet;
 var size = 21;
 var myWorker;
@@ -73,28 +74,46 @@ function gameInit()
 		}
 	}
 	
-	//DEFAULT (BLINKER)4,5/5
-	
-	setup[11][10][10] = 1;
-	setup[9][10][10] = 1;
-	setup[10][10][11] = 1;
-	setup[10][10][9] = 1;
-	setup[10][11][10] = 1;
-	setup[10][9][10] = 1;
-	setup[10][10][10] = 1;
-	
+	setPreset(setup);
 
-	//ACCORDION (WALL 2 WALL BLINKER)4,5/5
-	/*
-	setup[11][10][10] = 1;
-	setup[9][10][10] = 1;
-	setup[10][10][11] = 1;
-	setup[10][10][9] = 1;
-	setup[10][11][10] = 1;
-	setup[10][9][10] = 1;
-	setup[10][10][10] = 1;
-	*/
+	g_currStep = setup;
+	
+	document.getElementById('txtBVal').value = '4,5';
+	document.getElementById('txtSVal').value = '5';
+	
+	// Set initial step update speed
+	var initialSpeed = 1000;
+	document.getElementById('rngSpeed').value = initialSpeed;
+	setSpeed(initialSpeed);
+	
+	gameStart();
+	gameStop();
+}
 
+function setPreset(setup)
+{
+	if(preset == 1) 
+	{
+			//DEFAULT (BLINKER)4,5/5
+			console.log('eat shit');
+			setup[11][10][10] = 1;
+			setup[9][10][10] = 1;
+			setup[10][10][11] = 1;
+			setup[10][10][9] = 1;
+			setup[10][11][10] = 1;
+			setup[10][9][10] = 1;
+			setup[10][10][10] = 1;
+	}
+	else if(preset == 2)
+	{
+			//ACCORDION (WALL 2 WALL BLINKER)4,5/5
+			setup[10][10][11] = 1;
+			setup[10][10][9] = 1;
+			setup[10][11][10] = 1;
+			setup[10][9][10] = 1;
+			setup[10][10][10] = 1;
+	}
+	
 	//BAD REACTION (EXPLOSION)4,5/5
 	/*
 	setup[9][10][10] = 1;
@@ -126,19 +145,6 @@ function gameInit()
 	setup[9][11][10] = 1;
 	setup[10][11][10] = 1;
 	*/
-
-	g_currStep = setup;
-	
-	document.getElementById('txtBVal').value = '4,5';
-	document.getElementById('txtSVal').value = '5';
-	
-	// Set initial step update speed
-	var initialSpeed = 1000;
-	document.getElementById('rngSpeed').value = initialSpeed;
-	setSpeed(initialSpeed);
-	
-	gameStart();
-	gameStop();
 }
 
 function gameStateInit(bInput, sInput)
