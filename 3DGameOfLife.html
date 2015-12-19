@@ -90,7 +90,16 @@
 
 	<body onload="main()" width="350" height="600">
 
+		
 		<hr></hr>
+		<select onchange="listChange(this.options[this.selectedIndex].value)">
+			<option value="1" selected="true">Default (Blinker)</option>
+			<option value="2">Accordian (Replicator)</option>
+			<option value="3">Bad Reaction (Explosion)</option>
+			<option value="4">Shockwave (Explosion)</option>
+			<option value="5">Carter Bays 600 (Glider 5766)</option>
+		</select>
+		<hr2></hr2>
 		<table id="myTypeTable" style="width:350px; padding:0px;">
 			<tr>
 				<td id="myTextBoxes">
@@ -122,7 +131,7 @@
 				<input id="rngSpeed" type="range" min="500" max="5000" value="" style="width:350px; vertical-align:middle;" oninput="setSpeed(this.value)">
 			</table>
 		</table>
-		<hr></hr>
+		<hr2></hr2>
 		<table>
 			<td>X:&nbsp;<input type="text" id="txtXVal" value="" style="width:40px; "></td>
 			<td>&nbsp;Y:&nbsp;<input type="text" id="txtYVal" value="" style="width:40px; "></td>
@@ -133,19 +142,44 @@
 			</table>
 		</table>
 		<hr></hr>
-		<h4>Controls</h4>
-		<h3>
-					Q.......Elevate
-			<br>	E.......Descend
-			<br>	A.......Strafe Left
-			<br>	D.......Strafe Right
-			<br>	W.......Move Towards Look-At
-			<br>	S.......Move Away From Look-At
-			<br>	UP......Look Up
-			<br>	DOWN....Look Down
-			<br>	LEFT....Look Left
-			<br>	RIGHT...Look Right
-			<br>	SPACE...Lock-On To Center
-		</h3>
+		<table>
+			<td>
+				<h4>Controls</h4>
+				<h3>
+							Q......Elevate
+					<br>	E......Descend
+					<br>	A......Strafe Left
+					<br>	D......Strafe Right
+					<br>	W......Move Forwards
+					<br>	S......Move Backwards
+				</h3>
+			</td>
+			<td>
+				<h4><br> </h4>
+				<h3>
+					<br>	UP......Look Up
+					<br>	DOWN...Look Down
+					<br>	LEFT....Look Left
+					<br>	RIGHT...Look Right
+					<br>	SPACE...Lock-On Center
+				</h3>
+			</td>
+		</table>
+		<table style="widht:350px;">
+			<td style="width:170px;">
+				<h4>Cubes</h4>
+				<h3>
+							Newly created cubes
+					<br>	are  <font color="#ffe200">yellow.</font>
+				</h3>
+			</td>
+			<td style="width:170px;">
+				<h4><br></h4>
+				<h3>
+							Surviving cubes
+					<br>	are  <font color="orange">orange.</font>
+				</h3>
+			</td>
+		</table>
 	</body>
 </html>

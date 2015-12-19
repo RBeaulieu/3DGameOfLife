@@ -1,17 +1,3 @@
-// Cool types of life
-/*	
-	bSet["5"] = true;
-	bSet["7"] = true;
-	sSet["6"] = true;
-*/
-/*
-	bSet["4"] = true;
-	bSet["5"] = true;
-	sSet["5"] = true;
-*/
-
-// CLEAN UP AND COMMENT WHEN POSSIBLE
-
 "use strict";
 
 var lifeBuffer;
@@ -21,6 +7,7 @@ var bufferLimit = 10;
 
 var bSet;
 var sSet;
+var preset = 1;
 var checkAllChangeSet;
 var size = 21;
 var myWorker;
@@ -73,64 +60,9 @@ function gameInit()
 		}
 	}
 	
-	//DEFAULT (BLINKER)4,5/5
-	
-	setup[11][10][10] = 1;
-	setup[9][10][10] = 1;
-	setup[10][10][11] = 1;
-	setup[10][10][9] = 1;
-	setup[10][11][10] = 1;
-	setup[10][9][10] = 1;
-	setup[10][10][10] = 1;
-	
-
-	//ACCORDION (WALL 2 WALL BLINKER)4,5/5
-	/*
-	setup[11][10][10] = 1;
-	setup[9][10][10] = 1;
-	setup[10][10][11] = 1;
-	setup[10][10][9] = 1;
-	setup[10][11][10] = 1;
-	setup[10][9][10] = 1;
-	setup[10][10][10] = 1;
-	*/
-
-	//BAD REACTION (EXPLOSION)4,5/5
-	/*
-	setup[9][10][10] = 1;
-	setup[10][10][11] = 1;
-	setup[10][10][9] = 1;
-	setup[10][11][10] = 1;
-	setup[10][9][10] = 1;
-	setup[10][10][10] = 1;
-
-	setup[12][10][10] = 1;
-	setup[12][10][11] = 1;
-	setup[12][10][9] = 1;
-	setup[12][11][10] = 1;
-	setup[12][9][10] = 1;
-	setup[13][10][10] = 1;
-	*/
-
-	//SHOCKWAVE (EXPLOSION)2,5/4,8
-	/*
-	setup[10][9][9] = 1;
-	setup[10][9][11] = 1;
-	setup[11][9][10] = 1;
-	setup[9][9][10] = 1;
-	setup[10][9][10] = 1;
-
-	setup[10][11][9] = 1;
-	setup[10][11][11] = 1;
-	setup[11][11][10] = 1;
-	setup[9][11][10] = 1;
-	setup[10][11][10] = 1;
-	*/
+	setPreset(setup);
 
 	g_currStep = setup;
-	
-	document.getElementById('txtBVal').value = '4,5';
-	document.getElementById('txtSVal').value = '5';
 	
 	// Set initial step update speed
 	var initialSpeed = 1000;
@@ -139,6 +71,84 @@ function gameInit()
 	
 	gameStart();
 	gameStop();
+}
+
+function setPreset(setup){
+
+	if(preset==1){
+		//DEFAULT (BLINKER)4,5/5
+		console.log('eat shit');
+		setup[11][10][10] = 1;
+		setup[9][10][10] = 1;
+		setup[10][10][11] = 1;
+		setup[10][10][9] = 1;
+		setup[10][11][10] = 1;
+		setup[10][9][10] = 1;
+		setup[10][10][10] = 1;
+		document.getElementById('txtBVal').value = '4,5';
+		document.getElementById('txtSVal').value = '5';
+	}
+	else if(preset==2){
+		//ACCORDION (WALL 2 WALL BLINKER)4,5/5
+		setup[10][10][11] = 1;
+		setup[10][10][9] = 1;
+		setup[10][11][10] = 1;
+		setup[10][9][10] = 1;
+		setup[10][10][10] = 1;
+		document.getElementById('txtBVal').value = '4,5';
+		document.getElementById('txtSVal').value = '5';
+	}
+	else if(preset==3){
+		//BAD REACTION (EXPLOSION)4,5/5
+		setup[9][10][10] = 1;
+		setup[10][10][11] = 1;
+		setup[10][10][9] = 1;
+		setup[10][11][10] = 1;
+		setup[10][9][10] = 1;
+		setup[10][10][10] = 1;
+
+		setup[12][10][10] = 1;
+		setup[12][10][11] = 1;
+		setup[12][10][9] = 1;
+		setup[12][11][10] = 1;
+		setup[12][9][10] = 1;
+		setup[13][10][10] = 1;
+		document.getElementById('txtBVal').value = '4,5';
+		document.getElementById('txtSVal').value = '5';
+	}
+	else if(preset==4){
+		//SHOCKWAVE (EXPLOSION)2,5/4,8
+		setup[10][9][9] = 1;
+		setup[10][9][11] = 1;
+		setup[11][9][10] = 1;
+		setup[9][9][10] = 1;
+		setup[10][9][10] = 1;
+		setup[10][8][10] = 1;
+
+		setup[10][11][9] = 1;
+		setup[10][11][11] = 1;
+		setup[11][11][10] = 1;
+		setup[9][11][10] = 1;
+		setup[10][11][10] = 1;
+		setup[10][12][10] = 1;
+		document.getElementById('txtBVal').value = '2,5';
+		document.getElementById('txtSVal').value = '4,8';
+	}
+	else if(preset==5){
+		//Carter Bays 600 (Glider 5766)
+		setup[10][17][2] = 1;
+		setup[10][17][1] = 1;
+		setup[10][18][2] = 1;
+		setup[10][18][0] = 1;
+		setup[10][19][2] = 1;
+		setup[9][17][2] = 1;
+		setup[9][17][1] = 1;
+		setup[9][18][2] = 1;
+		setup[9][18][0] = 1;
+		setup[9][19][2] = 1;
+		document.getElementById('txtBVal').value = '6';
+		document.getElementById('txtSVal').value = '5,6,7';
+	}
 }
 
 function gameStateInit(bInput, sInput)
