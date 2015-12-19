@@ -92,8 +92,8 @@ function testCubes()
 function drawInit()
 {
 	// Set up test cube array (comment out if using game)
-	testCubes();
-	//g_currStep = lifeBuffer[0].arr;
+	//testCubes();
+	g_currStep = lifeBuffer[0].arr;
 	g_isStopped = true;
 	g_lastUpdate = 0;
 	g_stepCounter = 0;
