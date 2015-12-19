@@ -88,9 +88,9 @@ function testCubes()
 			
 			for(var x = 0; x < size; x ++)
 			{
-				if(z == 10 || y == 10 || x == 10) { g_currStep[z][y][x] = 1; }
-				else if(z == 9 || y == 9 || x == 9) { g_currStep[z][y][x] = 1; }
-				else { g_currStep[z][y][x] = 1; }
+				if(z%2 == 0 && y%2 == 0 && x%2 == 0) { g_currStep[z][y][x] = 1; }
+				//else if(z == 9 || y == 9 || x == 9) { g_currStep[z][y][x] = 1; }
+				else { g_currStep[z][y][x] = 0; }
 			}
 		}
 	}
@@ -115,8 +115,8 @@ function handleTextureLoaded(image, texture) {
 function drawInit()
 {
 	// Set up test cube array (comment out if using game)
-	//testCubes();
-	g_currStep = lifeBuffer[0].arr;
+	testCubes();
+	//g_currStep = lifeBuffer[0].arr;
 	g_isStopped = true;
 	g_lastUpdate = 0;
 	g_stepCounter = 0;
