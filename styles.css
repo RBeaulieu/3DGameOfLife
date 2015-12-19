@@ -105,8 +105,8 @@ input[type=text]:focus{
 }
 
 select{
-	color: #808080;
-	background-color: #1c2126;
+	color: #FFF;
+	background-color: #15202b;
 	text-align: center;
 	font-size: 16px;
 	height:35px;
