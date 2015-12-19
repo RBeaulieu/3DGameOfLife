@@ -52,6 +52,7 @@ onmessage = function(event) {
 				currStep[z][y][x] = 0;
 				for(var chng of neighbors)	{ currChangeSet[chng] = true; }
 			}
+            else { currStep[z][y][x] = 2; }
 		}
 		else
 		{
