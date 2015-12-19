@@ -74,7 +74,7 @@ function gameInit()
 	}
 	
 	//DEFAULT (BLINKER)4,5/5
-	///*
+	
 	setup[11][10][10] = 1;
 	setup[9][10][10] = 1;
 	setup[10][10][11] = 1;
@@ -82,7 +82,7 @@ function gameInit()
 	setup[10][11][10] = 1;
 	setup[10][9][10] = 1;
 	setup[10][10][10] = 1;
-	//*/
+	
 
 	//ACCORDION (WALL 2 WALL BLINKER)4,5/5
 	/*
