@@ -90,6 +90,12 @@
 
 	<body onload="main()" width="350" height="600">
 
+		<select onchange="listChange(this.options[this.selectedIndex].value)">
+			<option value="1" selected="true">Volvo</option>
+			<option value="2">Saab</option>
+			<option value="3">Opel</option>
+			<option value="4">Audi</option>
+		</select>
 		<hr></hr>
 		<table id="myTypeTable" style="width:350px; padding:0px;">
 			<tr>
@@ -132,7 +138,6 @@
 				<button id="btnModify" style="width:252px; height:25px; font-size:16px;" onclick="modifyLocation()">Add/Remove Cube</button>
 			</table>
 		</table>
-		<hr></hr>
 		<h4>Controls</h4>
 		<h3>
 					Q.......Elevate
