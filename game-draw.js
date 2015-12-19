@@ -94,9 +94,9 @@ function testCubes()
 			
 			for(var x = 0; x < size; x ++)
 			{
-				if(z == 10 || y == 10 || x == 10) { g_currStep[z][y][x] = 1; }
-				else if(z == 9 || y == 9 || x == 9) { g_currStep[z][y][x] = 1; }
-				else { g_currStep[z][y][x] = 1; }
+				if(z%2 == 0 && y%2 == 0 && x%2 == 0) { g_currStep[z][y][x] = 1; }
+				//else if(z == 9 || y == 9 || x == 9) { g_currStep[z][y][x] = 1; }
+				else { g_currStep[z][y][x] = 0; }
 			}
 		}
 	}
