@@ -76,6 +76,12 @@ var g_dX;
 var g_dY;
 var g_dZ;
 
+// TEXTURE STUFF
+var g_aTexCoord;
+var g_uSampler;
+var g_texture;
+var g_SHIT;
+
 function testCubes()
 {
 	for(var z = 0; z < size; z++)
@@ -88,28 +94,12 @@ function testCubes()
 			
 			for(var x = 0; x < size; x ++)
 			{
-				if(z == 10 || y == 10 || x == 10) { g_currStep[z][y][x] = 1; }
-				else if(z == 9 || y == 9 || x == 9) { g_currStep[z][y][x] = 1; }
-				else { g_currStep[z][y][x] = 1; }
+				if(z%2 == 0 && y%2 == 0 && x%2 == 0) { g_currStep[z][y][x] = 1; }
+				//else if(z == 9 || y == 9 || x == 9) { g_currStep[z][y][x] = 1; }
+				else { g_currStep[z][y][x] = 0; }
 			}
 		}
 	}
-}
-
-function initTexture() {
-	bCubeTexture = gl.createTexture();
-	bCubeImage = new Image();
-	cubeImage.onload = function() { handleTextureLoaded(bCubeImage, bCubeTexture); }
-	bCubeImage.src = "textures/bCube.png";
-}
-
-function handleTextureLoaded(image, texture) {
-	gl.bindTexture(gl.TEXTURE_2D, texture);
-	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-	gl.generateMipmap(gl.TEXTURE_2D);
-	gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
 function drawInit()
@@ -146,12 +136,6 @@ function drawInit()
 		console.log('*** Error: Failed to intialize shaders.');
 		return;
 	}
-	// Set vertex information
-	g_numIndices = initVertexBuffers(g_webGL);
-	if (g_numIndices < 0) {
-		console.log('*** Error: Failed to set the vertex information');
-		return;
-	}
 	
 	// Specify the color for clearing <canvas>
 	g_webGL.clearColor(23.0/255.0, 27.0/255.0, 31.0/255.0, 1.0);
@@ -164,14 +148,30 @@ function drawInit()
 	
 	// Get the storage locations of attribute and uniform variables
 	g_aPosition = g_webGL.getAttribLocation(g_webGL.program, 'a_Position');
+	g_aTexCoord = g_webGL.getAttribLocation(g_webGL.program, 'a_TexCoord');
 	g_uMMatrix = g_webGL.getUniformLocation(g_webGL.program, 'u_MMatrix');
 	g_uMVPMatrix = g_webGL.getUniformLocation(g_webGL.program, 'u_MVPMatrix');
 	g_uNormalMatrix = g_webGL.getUniformLocation(g_webGL.program, 'u_NormalMatrix');
 	g_uLightColor = g_webGL.getUniformLocation(g_webGL.program, 'u_LightColor');
 	g_uLightPosition = g_webGL.getUniformLocation(g_webGL.program, 'u_LightPosition');
 	g_uAmbientLight = g_webGL.getUniformLocation(g_webGL.program, 'u_AmbientLight');
-	if (g_aPosition < 0 || !g_uMMatrix || !g_uMVPMatrix || !g_uNormalMatrix || !g_uLightColor || !g_uLightPosition || !g_uAmbientLight) {
+	g_uSampler = g_webGL.getUniformLocation(g_webGL.program, 'u_Sampler');
+	
+	if (g_aPosition < 0 || g_aTexCoord < 0 || !g_uMMatrix || !g_uMVPMatrix || !g_uNormalMatrix || !g_uLightColor || !g_uLightPosition || !g_uAmbientLight || !g_uSampler) {
 		console.log('*** Error: Failed to get the storage location of attribute or uniform variable');
+		return;
+	}
+	
+	// Set vertex information
+	g_numIndices = initVertexBuffers(g_webGL);
+	if (g_numIndices < 0) {
+		console.log('*** Error: Failed to set the vertex information');
+		return;
+	}
+	
+	g_texture = initTextures(g_webGL);
+	if (!g_texture) {
+		console.log('Failed to intialize the texture.');
 		return;
 	}
 	
@@ -200,6 +200,40 @@ function getShader(g_webGL, scriptId)
 	if (shaderScript.type == 'x-shader/x-vertex') { VSHADER_SOURCE = shaderScript.text; }
 	else if (shaderScript.type == 'x-shader/x-fragment') { FSHADER_SOURCE = shaderScript.text; } 
 	else { console.log('*** Error: shader type not set'); }
+}
+
+function initTextures(g_webGL) {
+	var texture = g_webGL.createTexture();   // Create a texture object
+	if (!texture) {
+		console.log('Failed to create the texture object');
+		return null;
+	}
+	
+	var image = new Image();  // Create a image object
+	if (!image) {
+		console.log('Failed to create the image object');
+		return null;
+	}
+	// Register the event handler to be called when image loading is completed
+	image.onload = function() {
+		// Write the image data to texture object
+		g_webGL.pixelStorei(g_webGL.UNPACK_FLIP_Y_WEBGL, 1);  // Flip the image Y coordinate
+		g_webGL.activeTexture(g_webGL.TEXTURE0);
+		g_webGL.bindTexture(g_webGL.TEXTURE_2D, texture);
+		g_webGL.texParameteri(g_webGL.TEXTURE_2D, g_webGL.TEXTURE_MIN_FILTER, g_webGL.LINEAR);
+		g_webGL.texImage2D(g_webGL.TEXTURE_2D, 0, g_webGL.RGBA, g_webGL.RGBA, g_webGL.UNSIGNED_BYTE, image);
+	
+		// Pass the texure unit 0 to u_Sampler
+		g_webGL.useProgram(g_webGL.program);
+		g_webGL.uniform1i(g_uSampler, 0);
+	
+		g_webGL.bindTexture(g_webGL.TEXTURE_2D, null); // Unbind texture
+	};
+	
+	// Tell the browser to load an Image
+	image.src = 'textures/bCube.png';
+	
+	return texture;
 }
 
 function initVertexBuffers(g_webGL)
@@ -253,6 +287,15 @@ function initVertexBuffers(g_webGL)
 		0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0   // v4-v7-v6-v5 back
 	]);
 	
+	var texCoords = new Float32Array([   // Texture coordinates
+		1.0, 1.0,   0.0, 1.0,   0.0, 0.0,   1.0, 0.0,    // v0-v1-v2-v3 front
+		0.0, 1.0,   0.0, 0.0,   1.0, 0.0,   1.0, 1.0,    // v0-v3-v4-v5 right
+		1.0, 0.0,   1.0, 1.0,   0.0, 1.0,   0.0, 0.0,    // v0-v5-v6-v1 up
+		1.0, 1.0,   0.0, 1.0,   0.0, 0.0,   1.0, 0.0,    // v1-v6-v7-v2 left
+		0.0, 0.0,   1.0, 0.0,   1.0, 1.0,   0.0, 1.0,    // v7-v4-v3-v2 down
+		0.0, 0.0,   1.0, 0.0,   1.0, 1.0,   0.0, 1.0     // v4-v7-v6-v5 back
+	]);
+	
 	var cubeIndices = new Uint8Array([       // Indices of the vertices
 		0, 1, 2,   0, 2, 3,    // front
 		4, 5, 6,   4, 6, 7,    // right
@@ -267,6 +310,9 @@ function initVertexBuffers(g_webGL)
 	
 	if (!initArrayBuffer(g_webGL, 'a_Color', cubeColors, 3, g_webGL.FLOAT)) { return -1; }
 	if (!initArrayBuffer(g_webGL, 'a_Normal', cubeNormals, 3, g_webGL.FLOAT)) { return -1; }
+	if (!initArrayBuffer(g_webGL, 'a_TexCoord', texCoords, 2, g_webGL.FLOAT)) { return -1; }
+	
+	// Bind texture object to texture unit 0
 	
 	// Write the indices to the buffer object
 	var indexBuffer = g_webGL.createBuffer();
@@ -408,6 +454,9 @@ function moveCamera(){
 function draw(highResTimestamp) {
 	requestAnimationFrame(draw);
 	
+	g_webGL.activeTexture(g_webGL.TEXTURE0);
+	g_webGL.bindTexture(g_webGL.TEXTURE_2D, g_texture);
+	
 	moveCamera();
 	
 	// Clear color and depth buffer
@@ -418,7 +467,7 @@ function draw(highResTimestamp) {
 	g_vpMatrix.setPerspective(70.0, g_canvas.width / g_canvas.height, 1.0, 200.0);
 	g_vpMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ, g_centerX, g_centerY, g_centerZ, 0.0, 1.0, 0.0);
 	
-	drawLargeCubeOutline();
+	//drawLargeCubeOutline();
 	
 	g_population = 0;
 	//Read the 3D Array
@@ -459,7 +508,6 @@ function drawCube(x, y, z)
 	
 	// Calculate the model view project matrix and pass it to g_uMVPMatrix
 	g_mvpMatrix.set(g_vpMatrix);
-	//g_mvpMatrix.translate(x * 3, y * 3, z * 3);
 	g_mvpMatrix.multiply(g_modelMatrix);
 	g_webGL.uniformMatrix4fv(g_uMVPMatrix, false, g_mvpMatrix.elements);
 	// Calculate matrix for normal and pass it to g_uNormalMatrix
