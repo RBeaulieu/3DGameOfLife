@@ -66,8 +66,6 @@ var g_dX;
 var g_dY;
 var g_dZ;
 
-// TEXTURE STUFF
-var g_uSampler;
 var g_bornTexture;
 var g_surviveTexture;
 
@@ -129,6 +127,16 @@ function drawInit()
 		return;
 	}
 	
+	// Initialize cube shaders' attribute and uniform variables
+	if(initOutlineAttribsAndUniforms() < 0) { return; }
+	
+	// Set vertex information
+	g_outlineBuffers = initOutlineVertexBuffers();
+	if (g_outlineBuffers === null) {
+		console.log('*** Error: Failed to set the vertex information');
+		return;
+	}
+	
 	// Retrieve cube vertex shader and fragment shader from HTML page and initialize them
 	getShader('cubeshader-vs');
 	getShader('cubeshader-fs');
@@ -162,22 +170,12 @@ function drawInit()
 		return;
 	}
 	
+	
+	
 	// Set point light color
 	g_webGL.uniform3f(g_cubeProgram.u_LightColor, 1.0, 1.0, 1.0);
 	// Set amount and color of ambient light
 	g_webGL.uniform3f(g_cubeProgram.u_AmbientLight, 0.3, 0.3, 0.3);
-	
-	g_webGL.useProgram(g_outlineProgram);
-	
-	// Initialize cube shaders' attribute and uniform variables
-	if(initOutlineAttribsAndUniforms() < 0) { return; }
-	
-	// Set vertex information
-	g_outlineBuffers = initOutlineVertexBuffers();
-	if (g_outlineBuffers === null) {
-		console.log('*** Error: Failed to set the vertex information');
-		return;
-	}
 	
 	// Specify the color for clearing <canvas>
 	g_webGL.clearColor(23.0/255.0, 27.0/255.0, 31.0/255.0, 1.0);
@@ -187,9 +185,6 @@ function drawInit()
 	g_webGL.enable(g_webGL.CULL_FACE);
 	// Set to cull back faces
 	g_webGL.cullFace(g_webGL.BACK);
-	
-	g_webGL.enable(g_webGL.BLEND);
-	g_webGL.blendFunc(g_webGL.SRC_ALPHA, g_webGL.ONE_MINUS_SRC_ALPHA);
 	
 	// Register the event handlers to be called on key press and key release
 	document.onkeydown = function(ev){ keyDown(ev); };
@@ -216,7 +211,6 @@ function initCubeAttribsAndUniforms()
 {
 	// Get the storage locations of attribute and uniform variables for the cube shader
 	g_cubeProgram.a_Position = g_webGL.getAttribLocation(g_cubeProgram, 'a_Position');
-	console.log(g_cubeProgram.a_Position);
 	if(g_cubeProgram.a_Position < 0)
 	{
 		console.log('*** Error: Failed to get the storage location of a_Position attribute variable for cube shader');
@@ -292,8 +286,6 @@ function initCubeAttribsAndUniforms()
 function initOutlineAttribsAndUniforms()
 {
 	g_outlineProgram.a_Position = g_webGL.getAttribLocation(g_outlineProgram, 'a_Position');
-	console.log(g_outlineProgram.a_Position);
-	console.log(g_outlineProgram.a_Position < 0);
 	if(g_outlineProgram.a_Position < 0)
 	{
 		console.log('*** Error: Failed to get the storage location of a_Position attribute variable for outline shader');
@@ -336,10 +328,6 @@ function initTextures(location)
 		g_webGL.bindTexture(g_webGL.TEXTURE_2D, texture);
 		g_webGL.texParameteri(g_webGL.TEXTURE_2D, g_webGL.TEXTURE_MIN_FILTER, g_webGL.LINEAR);
 		g_webGL.texImage2D(g_webGL.TEXTURE_2D, 0, g_webGL.RGBA, g_webGL.RGBA, g_webGL.UNSIGNED_BYTE, image);
-	
-		// Pass the texure unit 0 to u_Sampler
-		//g_webGL.useProgram(g_webGL.program);
-		//g_webGL.uniform1i(g_uSampler, 0); //////////////////////////////////////////////////
 	
 		g_webGL.bindTexture(g_webGL.TEXTURE_2D, null); // Unbind texture
 	};
@@ -577,12 +565,16 @@ function draw(highResTimestamp) {
 	// Clear color and depth buffer
 	g_webGL.clear(g_webGL.COLOR_BUFFER_BIT | g_webGL.DEPTH_BUFFER_BIT);
 	
+	g_webGL.activeTexture(g_webGL.TEXTURE1);
+	g_webGL.bindTexture(g_webGL.TEXTURE_2D, g_bornTexture);
+	
+	g_webGL.activeTexture(g_webGL.TEXTURE2);
+	g_webGL.bindTexture(g_webGL.TEXTURE_2D, g_surviveTexture);
+	
 	g_webGL.uniform3f(g_cubeProgram.u_LightPosition, g_eyeX, g_eyeY, g_eyeZ)
 
 	g_vpMatrix.setPerspective(70.0, g_canvas.width / g_canvas.height, 1.0, 200.0);
 	g_vpMatrix.lookAt(g_eyeX, g_eyeY, g_eyeZ, g_centerX, g_centerY, g_centerZ, 0.0, 1.0, 0.0);
-	
-	g_webGL.activeTexture(g_webGL.TEXTURE0);
 	
 	g_population = 0;
 	//Read the 3D Array
@@ -592,18 +584,9 @@ function draw(highResTimestamp) {
 		{
 			for(var x = 0; x < size; x ++)
 			{
-				if(g_currStep[z][y][x] == 1)
+				if(g_currStep[z][y][x] != 0)
 				{
-					g_webGL.bindTexture(g_webGL.TEXTURE_2D, g_bornTexture);
-					
-					drawCube(g_cubeProgram, g_cubeBuffers, x, y, z);
-					g_population++;
-				}
-				else if(g_currStep[z][y][x] == 2)
-				{
-					g_webGL.bindTexture(g_webGL.TEXTURE_2D, g_surviveTexture);
-
-					drawCube(g_cubeProgram, g_cubeBuffers, x, y, z);
+					drawCube(g_cubeProgram, g_cubeBuffers, x, y, z, g_currStep[z][y][x]);
 					g_population++;
 				}
 			}
@@ -632,8 +615,10 @@ function initAttributeVariable(a_attribute, buffer) {
 	g_webGL.enableVertexAttribArray(a_attribute);
 }
 
-function drawCube(program, buffers, x, y, z)
+function drawCube(program, buffers, x, y, z, val)
 {
+	g_webGL.uniform1i(program.u_Sampler, val);
+	
 	g_modelMatrix.setTranslate(x * 3, y * 3, z * 3);
 	g_webGL.uniformMatrix4fv(program.u_MMatrix, false, g_modelMatrix.elements);
 	

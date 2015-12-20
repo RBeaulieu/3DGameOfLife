@@ -32,8 +32,8 @@ html{
 	margin: 0;
 }
 h1{
-	padding: 0;
 	margin: 3px;
+	margin-top: 0px;
 	font-size: 24px;
 	color: #FFF;
 }
@@ -70,7 +70,7 @@ button{
 	text-align: center;
 	font-weight: normal;
 	font-size: 18px;
-	height:45px; 
+	height:35px; 
 	width:145px;
 	background-color: #15202b;
 }
@@ -79,7 +79,6 @@ button:disabled{
 	text-align: center;
 	font-weight: normal;
 	font-size: 18px;
-	height:45px; 
 	width:145px;
 	background-color: #1c2126;
 }
@@ -103,6 +102,19 @@ input[type=text]:focus{
 	text-align: center;
 	font-size: 16px;
 	height:25px;
+}
+
+select{
+	color: #FFF;
+	background-color: #15202b;
+	text-align: center;
+	font-size: 16px;
+	height:35px;
+}
+select:focus{
+	color: #1aF;
+	background-color: #15202b;
+	text-align: center;
 }
 canvas{
 	padding:0.5%;
