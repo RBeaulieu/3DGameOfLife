@@ -40,6 +40,12 @@ function gameReset()
 	g_stepCounter = 0;
 }
 
+function setSpeed(newVal)
+{
+	g_updateSpeed = newVal;
+	document.getElementById('lblSpeed').innerHTML = newVal + 'ms';
+}
+
 function modifyLocation()
 {
 	var xString = document.getElementById('txtXVal').value;
@@ -74,10 +80,10 @@ function modifyLocation()
 	document.getElementById('txtZVal').value = '';
 }
 
-function setSpeed(newVal)
+function listChange(newVal)
 {
-	g_updateSpeed = newVal;
-	document.getElementById('lblSpeed').innerHTML = newVal + 'ms';
+	preset = newVal;
+	gameReset();
 }
 
 function enableControls()

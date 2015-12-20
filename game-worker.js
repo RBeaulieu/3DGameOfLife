@@ -1,7 +1,5 @@
 "use strict";
 
-// COMMENT WHEN POSSIBLE
-
 onmessage = function(event) {
 	var prevStep = JSON.parse(event.data[0]);
 	var currStep = prevStep.map(function(outerArr) { return outerArr.map(function(innerArr) { return innerArr.slice(); }) });
@@ -52,6 +50,7 @@ onmessage = function(event) {
 				currStep[z][y][x] = 0;
 				for(var chng of neighbors)	{ currChangeSet[chng] = true; }
 			}
+            else { currStep[z][y][x] = 2; }
 		}
 		else
 		{
